@@ -2,26 +2,26 @@ from langchain_community.llms.llamacpp   import LlamaCpp
 from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
 from langchain_core.prompts import PromptTemplate
 
-template = """Question: {question}
 
-Answer: Let's work this out in a step by step way to be sure we have the right answer."""
-
-prompt = PromptTemplate.from_template(template)
+prompt = PromptTemplate.from_template("""
+You are a helpful chatbot. Respond to questions like a human would
+Question: {query}
+""")
 
 # Callbacks support token-wise streaming
 callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
 
 
-llm = LlamaCpp(
-    model_path="/models/7b/mistral-7b-v0.1.Q5_K_S.gguf",
-    temperature=0.0,
-    max_tokens=2000,
+mistral_7b = LlamaCpp(
+    model_path="C:/Users/kvgk2/OneDrive/Desktop/Abhi/code/MandanGPT/models/7b/mistral-7b-v0.1.Q5_K_S.gguf",
+    temperature=0.4,
+    max_tokens=200,
     top_p=1,
     n_gpu_layers=33,
     n_ctx=1024,
     n_batch=512,
-    callback_manager=callback_manager,
-    verbose=True,  # Verbose is required to pass to the callback manager
+    # callback_manager=callback_manager,
+    # verbose=True,  # Verbose is required to pass to the callback manager
 )
 
 if __name__ == "__main__":

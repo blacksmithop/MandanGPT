@@ -1,24 +1,27 @@
 # This example requires the 'message_content' intent.
 
 import discord
+from discord.ext import commands
 from dotenv import load_dotenv
 from os import getenv
+from cogs.user_greeting import Greetings
+from cogs.error_handler import ErrorHandler
+from cogs.chabot import ChatBot
+
+cogs = [Greetings, ErrorHandler, ChatBot]
+
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-client = discord.Client(intents=intents)
+intents.message_content = True
 
-@client.event
+bot = commands.Bot(command_prefix='$', intents=intents)
+
+@bot.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    for cog in cogs:
+        await bot.add_cog(cog(bot))
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
-
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
-
-client.run(getenv("DISCORD_BOT_TOKEN"))
+bot.run(getenv("DISCORD_BOT_TOKEN"))
