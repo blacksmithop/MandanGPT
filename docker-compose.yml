@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  discord-bot:
+    image: blacksmithop/mandangpt:latest
+    environment:
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+    container_name: discord-bot
+    tty: true
+    restart: always
+    networks:
+      - ollama-docker
+
+networks:
+  ollama-docker:
+    external: false
+  
