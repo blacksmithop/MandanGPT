@@ -11,7 +11,7 @@ from discord.ext import commands, tasks
 from discord.ext.commands import Context
 from discord.errors import LoginFailure
 from dotenv import load_dotenv
-
+from utils import discord_bot_token
 from database import DatabaseManager
 
 if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config.json"):
@@ -245,6 +245,6 @@ load_dotenv()
 bot = DiscordBot()
 
 try:
-    bot.run(os.getenv("DISCORD_BOT_TOKEN"))
+    bot.run(discord_bot_token)
 except LoginFailure:
-    print("Please check your Bot token")
+    print("Please ensure your discord token is valid")
