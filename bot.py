@@ -104,6 +104,14 @@ class DiscordBot(commands.Bot):
                 await db.executescript(file.read())
             await db.commit()
 
+    async def async_cleanup(self):
+        print("Cleaning up")
+
+    async def close(self):
+        await self.async_cleanup()
+        await super().close()
+
+
     async def load_cogs(self) -> None:
         """
         The code in this function is executed whenever the bot will start.
@@ -154,6 +162,7 @@ class DiscordBot(commands.Bot):
                 f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db"
             )
         )
+
 
     async def on_message(self, message: discord.Message) -> None:
         """
