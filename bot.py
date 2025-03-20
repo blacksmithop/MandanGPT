@@ -100,9 +100,11 @@ class DiscordBot(commands.Bot):
     async def async_cleanup(self):
         print("Cleaning up")
 
+
     async def close(self):
+        # do your cleanup here
         await self.async_cleanup()
-        await super().close()
+        await super().close()  # don't forget this!
 
 
     async def load_cogs(self) -> None:
