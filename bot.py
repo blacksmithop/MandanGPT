@@ -1,9 +1,7 @@
-import json
 import logging
 import os
 import platform
 import random
-import sys
 
 import aiosqlite
 import discord
@@ -13,12 +11,7 @@ from discord.errors import LoginFailure
 from dotenv import load_dotenv
 from utils import discord_bot_token
 from database import DatabaseManager
-
-if not os.path.isfile(f"{os.path.realpath(os.path.dirname(__file__))}/config.json"):
-    sys.exit("'config.json' not found! Please add it and try again.")
-else:
-    with open(f"{os.path.realpath(os.path.dirname(__file__))}/config.json") as file:
-        config = json.load(file)
+from utils import bot_config as config
 
 
 # Enables all intents; Support both regular & slash commands
