@@ -20,7 +20,7 @@ class FeedbackForm(discord.ui.Modal, title="Feeedback"):
         self.stop()
 
 
-class General(commands.Cog, name="general"):
+class General(commands.Cog, name="General"):
     def __init__(self, bot) -> None:
         self.bot = bot
 
@@ -43,7 +43,7 @@ class General(commands.Cog, name="general"):
                 data.append(f"{prefix}{command.name} - {description}")
             help_text = "\n".join(data)
             embed.add_field(
-                name=i.capitalize(), value=f"```{help_text}```", inline=False
+                name=cog_module_name, value=f"```{help_text}```", inline=False
             )
         await context.send(embed=embed)
 

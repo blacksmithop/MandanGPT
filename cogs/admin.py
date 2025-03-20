@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import Context
 from sys import exit
 
-class Owner(commands.Cog, name="admin"):
+class Owner(commands.Cog, name="Admin"):
     def __init__(self, bot) -> None:
         self.bot = bot
 
