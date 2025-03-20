@@ -3,7 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-
+from utils import get_embed_with_datetime
 
 class FeedbackForm(discord.ui.Modal, title="Feeedback"):
     feedback = discord.ui.TextInput(
@@ -29,13 +29,13 @@ class General(commands.Cog, name="General"):
     )
     async def help(self, context: Context) -> None:
         prefix = self.bot.config["prefix"]
-        embed = discord.Embed(
-            title="Help", description="List of available commands:", color=0xBEBEFE
-        )
-        for i in self.bot.cogs:
-            if i == "owner" and not (await self.bot.is_owner(context.author)):
+        is_owner = await self.bot.is_owner(context.author)
+
+        embed = get_embed_with_datetime(context=context, title="MandanGPT", description="List of available commands:", color=0xBEBEFE)
+        for cog_module_name, cog in self.bot.cogs.items():
+            if cog_module_name == "Admin" and not is_owner:
                 continue
-            cog = self.bot.get_cog(i.lower())
+            # TODO: Figure our how to get file name of cogs
             commands = cog.get_commands()
             data = []
             for command in commands:
