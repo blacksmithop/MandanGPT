@@ -1,23 +1,14 @@
 import platform
 import discord
-from discord import app_commands
+from discord import app_commands, Embed, Interaction
 from discord.ext import commands
 from discord.ext.commands import Context
-from utils import get_embed_with_datetime
+from utils import FeedbackForm, generate_man_page, Pagination, HelpCommandArgParser
+from typing import Optional
 
-class FeedbackForm(discord.ui.Modal, title="Feeedback"):
-    feedback = discord.ui.TextInput(
-        label="What do you think about this bot?",
-        style=discord.TextStyle.long,
-        placeholder="Type your answer here...",
-        required=True,
-        max_length=256,
-    )
-
-    async def on_submit(self, interaction: discord.Interaction):
-        self.interaction = interaction
-        self.answer = str(self.feedback)
-        self.stop()
+# Debug
+users = [f"User {i}" for i in range(1, 10000)]
+L = 10
 
 
 class General(commands.Cog, name="General"):
@@ -27,25 +18,15 @@ class General(commands.Cog, name="General"):
     @commands.hybrid_command(
         name="help", description="List all commands the bot has loaded."
     )
-    async def help(self, context: Context) -> None:
-        prefix = self.bot.config["prefix"]
-        is_owner = await self.bot.is_owner(context.author)
-
-        embed = get_embed_with_datetime(context=context, title="MandanGPT", description="List of available commands:", color=0xBEBEFE)
-        for cog_module_name, cog in self.bot.cogs.items():
-            if cog_module_name == "Admin" and not is_owner:
-                continue
-            # TODO: Figure our how to get file name of cogs
-            commands = cog.get_commands()
-            data = []
-            for command in commands:
-                description = command.description.partition("\n")[0]
-                data.append(f"{prefix}{command.name} - {description}")
-            help_text = "\n".join(data)
-            embed.add_field(
-                name=cog_module_name, value=f"```{help_text}```", inline=False
-            )
-        await context.send(embed=embed)
+    async def help(self, context: Context, *, args: Optional[HelpCommandArgParser] = None) -> None:
+        # is_owner = await self.bot.is_owner(context.author)
+        cog_commands = self.bot.help_command_handler.cog_commands
+        print(args)
+        response = generate_man_page(context=context, args=args, cog_command_mapping=cog_commands)
+        if isinstance(response, Embed):
+            await context.send(embed=response)
+        else:
+            await context.send(content=response)
 
     @commands.hybrid_command(
         name="botinfo",
@@ -141,6 +122,24 @@ class General(commands.Cog, name="General"):
                 color=0xBEBEFE,
             )
         )
+
+
+    @app_commands.command(
+        name="pagination",
+        description="test pagination",
+    )
+    async def pagination(self, interaction: Interaction):
+        async def get_page(page: int):
+            emb = discord.Embed(title="The Users", description="")
+            offset = (page-1) * L
+            for user in users[offset:offset+L]:
+                emb.description += f"{user}\n"
+            emb.set_author(name=f"Requested by {interaction.user}")
+            n = Pagination.compute_total_pages(len(users), L)
+            emb.set_footer(text=f"Page {page} from {n}")
+            return emb, n
+
+        await Pagination(interaction, get_page).navegate()
 
 
 async def setup(bot) -> None:
