@@ -4,7 +4,7 @@ from discord.ext import commands
 from discord.ext.commands import Context
 from sys import exit
 
-class Owner(commands.Cog, name="Admin"):
+class Admin(commands.Cog, name="Admin"):
     def __init__(self, bot) -> None:
         self.bot = bot
 
@@ -181,4 +181,4 @@ class Owner(commands.Cog, name="Admin"):
             # Handle tasks gracefully such as db connection close etc
 
 async def setup(bot) -> None:
-    await bot.add_cog(Owner(bot))
+    await bot.add_cog(Admin(bot))

@@ -11,7 +11,7 @@ from discord.errors import LoginFailure
 from dotenv import load_dotenv
 from utils import discord_bot_token
 from database import DatabaseManager
-from utils import bot_config as config
+from utils import bot_config as config, HelpCommand
 
 
 # Enables all intents; Support both regular & slash commands
@@ -122,6 +122,9 @@ class DiscordBot(commands.Bot):
                     self.logger.error(
                         f"Failed to load extension {extension}\n{exception}"
                     )
+        help_command_handler = HelpCommand(prefix=self.config["prefix"])
+        help_command_handler.walk_cogs_and_generate_help_text(cogs=self.cogs)
+        self.help_command_handler = help_command_handler
 
     @tasks.loop(minutes=1.0)
     async def status_task(self) -> None:
