@@ -2,9 +2,11 @@ from pydantic import BaseModel
 from langchain_core.runnables import ConfigurableField
 from typing import Optional
 
+
 __all__ = ["OllamaConfig", "GeminiConfig", "OpenAIConfig"]
 
 
+# LLM
 class OllamaConfig(BaseModel):
     url: str
     chat_model: str
@@ -23,6 +25,14 @@ class OpenAIConfig(BaseModel):
     api_endpoint: str
     chat_model: str
     embeddings_model: Optional[str] = None
+
+
+# Discord
+# Help Commands
+class HelpCmdArgs(BaseModel):
+    cog_or_cmd_name: Optional[str] = None
+    cog_name: Optional[str] = None
+    cmd_name: Optional[str] = None
 
 
 # Langchain ConfigurableField
