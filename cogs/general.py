@@ -1,14 +1,10 @@
 import platform
 import discord
-from discord import app_commands, Embed, Interaction
+from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-from utils import FeedbackForm, generate_man_page, Pagination, HelpCommandArgParser
+from utils import FeedbackForm, generate_man_page, HelpCommandArgParser
 from typing import Optional
-
-# Debug
-users = [f"User {i}" for i in range(1, 10000)]
-L = 10
 
 
 class General(commands.Cog, name="General"):
@@ -18,18 +14,18 @@ class General(commands.Cog, name="General"):
     @commands.hybrid_command(
         name="help", description="List all commands the bot has loaded."
     )
-    async def help(self, context: Context, *, args: Optional[HelpCommandArgParser] = None) -> None:
+    async def help(
+        self, context: Context, *, args: Optional[HelpCommandArgParser] = None
+    ) -> None:
         # is_owner = await self.bot.is_owner(context.author)
         cog_commands = self.bot.help_command_handler.cog_commands
-        print(args)
-        response = generate_man_page(context=context, args=args, cog_command_mapping=cog_commands)
-        if isinstance(response, Embed):
-            await context.send(embed=response)
-        else:
-            await context.send(content=response)
+        response = generate_man_page(
+            user=self.bot.user, args=args, cog_command_mapping=cog_commands
+        )
+        await context.send(embed=response)
 
     @commands.hybrid_command(
-        name="botinfo",
+        name="about",
         description="Get some useful (or not) information about the bot.",
     )
     async def botinfo(self, context: Context) -> None:
@@ -91,7 +87,6 @@ class General(commands.Cog, name="General"):
             await context.send("I sent you a private message!")
         except discord.Forbidden:
             await context.send(embed=embed)
-
 
     @app_commands.command(
         name="feedback", description="Submit a feedback for the owners of the bot"
