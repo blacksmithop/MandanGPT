@@ -118,23 +118,23 @@ class General(commands.Cog, name="General"):
             )
         )
 
+    # Dummy command to mess around with the ui kit
+    # @app_commands.command(
+    #     name="pagination",
+    #     description="test pagination",
+    # )
+    # async def pagination(self, interaction: Interaction):
+    #     async def get_page(page: int):
+    #         emb = discord.Embed(title="The Users", description="")
+    #         offset = (page - 1) * L
+    #         for user in users[offset : offset + L]:
+    #             emb.description += f"{user}\n"
+    #         emb.set_author(name=f"Requested by {interaction.user}")
+    #         n = Pagination.compute_total_pages(len(users), L)
+    #         emb.set_footer(text=f"Page {page} from {n}")
+    #         return emb, n
 
-    @app_commands.command(
-        name="pagination",
-        description="test pagination",
-    )
-    async def pagination(self, interaction: Interaction):
-        async def get_page(page: int):
-            emb = discord.Embed(title="The Users", description="")
-            offset = (page-1) * L
-            for user in users[offset:offset+L]:
-                emb.description += f"{user}\n"
-            emb.set_author(name=f"Requested by {interaction.user}")
-            n = Pagination.compute_total_pages(len(users), L)
-            emb.set_footer(text=f"Page {page} from {n}")
-            return emb, n
-
-        await Pagination(interaction, get_page).navegate()
+    #     await Pagination(interaction, get_page).navigate()
 
 
 async def setup(bot) -> None:
