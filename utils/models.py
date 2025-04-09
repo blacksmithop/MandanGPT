@@ -3,7 +3,7 @@ from langchain_core.runnables import ConfigurableField
 from typing import Optional
 
 
-__all__ = ["OllamaConfig", "GeminiConfig", "OpenAIConfig"]
+__all__ = ["OllamaConfig", "GeminiConfig", "OpenAIConfig", "UsageMetaData", "HelpCmdArgs"]
 
 
 # LLM
@@ -25,6 +25,12 @@ class OpenAIConfig(BaseModel):
     api_endpoint: str
     chat_model: str
     embeddings_model: Optional[str] = None
+
+# Usage Metadata
+class UsageMetaData(BaseModel):
+    input_tokens: int 
+    output_tokens: int 
+    total_tokens: int 
 
 
 # Discord
