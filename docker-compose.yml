@@ -1,0 +1,22 @@
+services:
+  vllm:
+    container_name: vllm_container
+    image: vllm/vllm-openai:latest
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
+    ports:
+      - "8000:8000"
+    ipc: host
+    command: --model TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T
+
+    
