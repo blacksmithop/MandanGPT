@@ -1,7 +1,7 @@
 from os import getenv, path
 from utils import InvalidLLMProvider, MissingLLMProvider, TokenNotSet
-from utils import GeminiConfig, OllamaConfig, OpenAIConfig
-from utils import seed_config, min_p_config, top_k_config, top_p_config, num_ctx_config, temperature_config
+from utils import GeminiConfig, OllamaConfig, OpenAIConfig, TranformerConfig
+from utils import seed_config, min_p_config, max_tokens_config, top_k_config, top_p_config, num_ctx_config, temperature_config
 import json
 import sys
 
@@ -35,6 +35,16 @@ if llm_provider:= getenv("LLM_PROVIDER"):
                 # "top_k":top_k_config,
                 # "top_p": top_p_config,
                 # "min_p": min_p_config
+            }
+        case "vllm":
+            llm_params = TranformerConfig(
+                url=getenv("VLLM_URL"),
+                chat_model=getenv("VLLM_CHAT_MODEL"),
+                embeddings_model=getenv("MODEL2VEC_EMBEDDING_MODEL")
+            )
+            llm_config = {
+                "temperature": temperature_config,
+                "max_tokens": max_tokens_config,
             }
         case "gemini":
             llm_params = GeminiConfig(
