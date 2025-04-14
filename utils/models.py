@@ -3,11 +3,24 @@ from langchain_core.runnables import ConfigurableField
 from typing import Optional
 
 
-__all__ = ["OllamaConfig", "GeminiConfig", "OpenAIConfig", "UsageMetaData", "HelpCmdArgs"]
+__all__ = [
+    "OllamaConfig",
+    "TranformerConfig",
+    "GeminiConfig",
+    "OpenAIConfig",
+    "UsageMetaData",
+    "HelpCmdArgs",
+]
 
 
 # LLM
 class OllamaConfig(BaseModel):
+    url: str
+    chat_model: str
+    embeddings_model: Optional[str] = None
+
+
+class TranformerConfig(BaseModel):
     url: str
     chat_model: str
     embeddings_model: Optional[str] = None
@@ -26,11 +39,12 @@ class OpenAIConfig(BaseModel):
     chat_model: str
     embeddings_model: Optional[str] = None
 
+
 # Usage Metadata
 class UsageMetaData(BaseModel):
-    input_tokens: int 
-    output_tokens: int 
-    total_tokens: int 
+    input_tokens: int
+    output_tokens: int
+    total_tokens: int
 
 
 # Discord
@@ -49,6 +63,11 @@ temperature_config = ConfigurableField(
 )
 num_ctx_config = ConfigurableField(
     id="num_ctx",
+    name="Context Window",
+    description="Set context window size",
+)
+max_tokens_config = ConfigurableField(
+    id="max_tokens",
     name="Context Window",
     description="Set context window size",
 )

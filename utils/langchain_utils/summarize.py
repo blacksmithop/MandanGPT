@@ -12,14 +12,11 @@ prompt = ChatPromptTemplate.from_messages(
 summarize_chain = prompt | llm | get_content_and_metadata
 
 
-async def summarize_text(text: str, temperature: int = 0, top_p: int = 0.9, num_ctx: int = 250):
+async def summarize_text(text: str, temperature: float = 0.2, top_p: float = 0.9, num_ctx: int = 250):
     try:
-        print(f"BEFORE")
-
         summary_text, usage_metadata = summarize_chain.invoke(
             {"context": text}, {"configurable": {"temperature": temperature, "num_ctx": num_ctx}} # TODO: Top P, other params
         )
-        print(f"SUMMARIZED")
         return summary_text, usage_metadata
     except Exception as e:
         print(e)

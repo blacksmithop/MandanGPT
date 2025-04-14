@@ -1,4 +1,4 @@
-from discord import Interaction, SelectOption, TextStyle
+from discord import Embed, Interaction, SelectOption, TextStyle
 from discord.ui import Modal, Select, TextInput, View
 from utils import summarize_text
 
@@ -68,7 +68,7 @@ class SummarizeModal(Modal, title="Summarize Text"):
 
     async def on_submit(self, interaction: Interaction):
         try:
-            # Validate inputs
+            # Validate inputs first (fast operations)
             temperature = float(self.temp_input.value)
             top_p = float(self.top_p_input.value)
             num_ctx = int(self.num_ctx_input.value)
@@ -80,34 +80,41 @@ class SummarizeModal(Modal, title="Summarize Text"):
             if num_ctx <= 0:
                 raise ValueError("Context length must be positive")
 
-            print(f"{temperature=} {top_p=} {num_ctx=}")
-            text_to_summarize = self.text_input.value
-            print(f"{text_to_summarize[:100]=}")
+            # Defer the response before long-running operation
+            await interaction.response.defer(ephemeral=False)
 
-            # Call your summarization function
+            # Process summarization
             summary_text, usage_metadata = await summarize_text(
-                text=text_to_summarize,
+                text=self.text_input.value,
                 temperature=temperature,
                 top_p=top_p,
                 num_ctx=num_ctx,
             )
-            print(f"{summary_text[:100]=}")
-            print(f"{usage_metadata=}")
 
-            await interaction.response.send_message(
-                f"**{self.summary_type.capitalize()} Summary:**\n"
-                f"{summary_text}\n\n"
-                f"*Parameters used:*\n"
-                f"- Temperature: {temperature}\n"
-                f"- Top P: {top_p}\n"
-                f"- Context Length: {num_ctx}",
-                ephemeral=False,
+            # Build and send embed
+            embed = Embed(
+                title=f"{self.summary_type.capitalize()} Summary",
+                description=summary_text[:4096],
+                color=0x3498DB,
             )
+            embed.add_field(name="Temperature", value=temperature, inline=True)
+            embed.add_field(name="Top P", value=top_p, inline=True)
+            embed.add_field(name="Context Length", value=num_ctx, inline=True)
+
+            if usage_metadata:
+                embed.set_footer(
+                    text=f"Input: {usage_metadata.input_tokens} | Output: {usage_metadata.output_tokens} | Total: {usage_metadata.total_tokens}",
+                )
+
+            await interaction.followup.send(embed=embed)
 
         except ValueError as e:
-            await interaction.response.send_message(
-                f"❌ Error: {str(e)}", ephemeral=True
+            await interaction.followup.send(f"❌ Error: {str(e)}", ephemeral=True)
+        except Exception as e:
+            await interaction.followup.send(
+                f"🔥 Unexpected error: {str(e)}", ephemeral=True
             )
+            raise e
 
 
 class SummaryTypeView(View):
@@ -140,35 +147,22 @@ class SummaryTypeView(View):
     async def on_summary_type_select(self, interaction: Interaction):
         summary_type = interaction.data["values"][0]
 
-        # Default parameters based on summary type
         type_params = {
-            "short": (0.2, 0.9, DEFAULT_NUM_CTX),  # More focused, less creative
-            "medium": (0.2, 0.9, DEFAULT_NUM_CTX * 3),  # Balanced
-            "elaborate": (0.5, 0.95, DEFAULT_NUM_CTX * 5),  # More creative/verbose
+            "short": (0.2, 0.9, DEFAULT_NUM_CTX),
+            "medium": (0.2, 0.9, DEFAULT_NUM_CTX * 3),
+            "elaborate": (0.5, 0.95, DEFAULT_NUM_CTX * 5),
         }
 
         temperature, top_p, num_ctx = type_params.get(
             summary_type, (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_NUM_CTX)
         )
 
-        # Show the parameter customization modal
+        # Now use followup to send the modal
         await interaction.response.send_modal(
-            SummarizeModal(
-                summary_type=summary_type,
-                temperature=temperature,
-                top_p=top_p,
-                num_ctx=num_ctx,
+                SummarizeModal(
+                    summary_type=summary_type,
+                    temperature=temperature,
+                    top_p=top_p,
+                    num_ctx=num_ctx
+                )
             )
-        )
-
-
-async def setup_summarize_command(bot):
-    @bot.tree.command(
-        name="summarize", description="Summarize text with customizable parameters"
-    )
-    async def summarize(interaction: Interaction):
-        """Command to start the summarization process"""
-        view = SummaryTypeView()
-        await interaction.response.send_message(
-            "📝 First, choose your summary type:", view=view, ephemeral=True
-        )

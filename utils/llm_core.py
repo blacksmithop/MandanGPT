@@ -79,13 +79,26 @@ def get_openai_models():
 
 def get_transformer_models():
     try:
+        from langchain_community.llms.vllm import VLLM
+
         from langchain_community.embeddings import Model2vecEmbeddings
     except ImportError:
         print("Please install the langchain-community package")
         exit(0)
-    # TODO: AGI
-    embeddings = Model2vecEmbeddings()
-    return embeddings
+
+    llm = VLLM(
+        model=llm_params.chat_model,
+        trust_remote_code=True,  # mandatory for hf models
+        max_new_tokens=128,
+        top_k=10,
+        top_p=0.95,
+        temperature=0.2,
+    )
+    if llm_params.embeddings_model:
+        embeddings = Model2vecEmbeddings(
+            llm_params.embeddings_model
+        )
+    return llm, embeddings
 
 
 match llm_provider:
@@ -95,7 +108,7 @@ match llm_provider:
         func = get_gemini_models
     case "opeani":
         func = get_openai_models
-    case _:
-        func = get_transformer_models()
+    case "vllm":
+        func = get_transformer_models
 
 llm, embeddings = func()

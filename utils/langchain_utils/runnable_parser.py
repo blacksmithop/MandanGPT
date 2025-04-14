@@ -3,6 +3,7 @@ from utils.models import UsageMetaData
 
 
 def get_content_and_metadata(message: AIMessage):
+    print(type(message))
+    print(message)
     content, metadata = message.content, UsageMetaData(**message.usage_metadata)
-    metadata_message = f"Input: {metadata.input_tokens} tokens | Output: {metadata.output_tokens} tokens | Total: {metadata.total_tokens} tokens"
-    return content, metadata_message
+    return content, metadata
