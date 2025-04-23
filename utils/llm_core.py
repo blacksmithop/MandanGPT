@@ -80,7 +80,7 @@ def get_openai_models():
 def get_transformer_models():
     try:
         from langchain_community.llms.vllm import VLLM
-
+        # https://docs.vllm.ai/en/latest/getting_started/installation/cpu.html?device=x86
         from langchain_community.embeddings import Model2vecEmbeddings
     except ImportError:
         print("Please install the langchain-community package")
@@ -108,7 +108,7 @@ match llm_provider:
         func = get_gemini_models
     case "opeani":
         func = get_openai_models
-    case "vllm":
+    case "transformers":
         func = get_transformer_models
 
 llm, embeddings = func()

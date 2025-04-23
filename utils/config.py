@@ -36,7 +36,7 @@ if llm_provider:= getenv("LLM_PROVIDER"):
                 # "top_p": top_p_config,
                 # "min_p": min_p_config
             }
-        case "vllm":
+        case "transformers":
             llm_params = TranformerConfig(
                 url=getenv("VLLM_URL"),
                 chat_model=getenv("VLLM_CHAT_MODEL"),
@@ -49,8 +49,8 @@ if llm_provider:= getenv("LLM_PROVIDER"):
         case "gemini":
             llm_params = GeminiConfig(
                 api_key=getenv("GOOGLE_API_KEY"),
-                chat_model=getenv("OLLAMA_CHAT_MODEL"),
-                embeddings_model=getenv("OLLAMA_EMBEDDINGS_MODEL")
+                chat_model=getenv("GOOGLE_CHAT_MODEL"),
+                embeddings_model=getenv("GOOGLE_EMBEDDINGS_MODEL")
             )
             llm_config = {
                 "temperature": temperature_config,
