@@ -3,12 +3,15 @@ import os
 import platform
 import random
 
-import aiosqlite
+# import aiosqlite
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Context
 from discord.errors import LoginFailure
 from dotenv import load_dotenv
+
+load_dotenv()
+
 from utils import discord_bot_token
 from database import DatabaseManager
 from utils import bot_config as config, HelpCommand
@@ -88,14 +91,15 @@ class DiscordBot(commands.Bot):
         self.database = None
 
     async def init_db(self) -> None:
-        async with aiosqlite.connect(
-            f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db"
-        ) as db:
-            with open(
-                f"{os.path.realpath(os.path.dirname(__file__))}/database/schema.sql"
-            ) as file:
-                await db.executescript(file.read())
-            await db.commit()
+        ...
+        # async with aiosqlite.connect(
+        #     f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db"
+        # ) as db:
+        #     with open(
+        #         f"{os.path.realpath(os.path.dirname(__file__))}/database/schema.sql"
+        #     ) as file:
+        #         await db.executescript(file.read())
+        #     await db.commit()
 
     async def async_cleanup(self):
         print("Cleaning up")
@@ -246,8 +250,6 @@ class DiscordBot(commands.Bot):
         else:
             raise error
 
-
-load_dotenv()
 
 bot = DiscordBot()
 
