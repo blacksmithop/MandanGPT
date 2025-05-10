@@ -159,10 +159,10 @@ class SummaryTypeView(View):
 
         # Now use followup to send the modal
         await interaction.response.send_modal(
-                SummarizeModal(
-                    summary_type=summary_type,
-                    temperature=temperature,
-                    top_p=top_p,
-                    num_ctx=num_ctx
-                )
+            SummarizeModal(
+                summary_type=summary_type,
+                temperature=temperature,
+                top_p=top_p,
+                num_ctx=num_ctx,
             )
+        )

@@ -5,7 +5,13 @@ from typing import Optional, Union
 from utils import bot_config
 from .color import get_random_hex_color
 
-def create_datetime_embed(title: str, description: Optional[str] = None, color: hex = get_random_hex_color(), user: Optional[Union[User, Member]] = None):
+
+def create_datetime_embed(
+    title: str,
+    description: Optional[str] = None,
+    color: hex = get_random_hex_color(),
+    user: Optional[Union[User, Member]] = None,
+):
     embed = Embed(
         url=bot_config["github_repo_url"],
         title=title,

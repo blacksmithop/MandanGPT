@@ -6,6 +6,7 @@ from discord.ext.commands import Converter
 from utils import HelpCmdArgs
 from discord import Embed, Member, User
 
+
 class HelpCommandArgParser(Converter):
     async def convert(self, ctx, arguments):
         args = arguments.split(" ")
@@ -28,10 +29,8 @@ def generate_man_page(
 ):
     if not args:
         cog_names = list(cog_command_mapping.keys())
-        
-        help_embed = create_datetime_embed(
-        user=user, title="MandanGPT"
-        )
+
+        help_embed = create_datetime_embed(user=user, title="MandanGPT")
 
         module_info = ""
         for i, module_name in enumerate(cog_names):
@@ -51,7 +50,7 @@ def generate_man_page(
     elif ambiguous_name and ambiguous_name in cog_command_mapping.keys():
         cog_name = ambiguous_name
         cmd_name = None
-    
+
     try:
         cog_commands = cog_command_mapping[cog_name]
         if not cmd_name:

@@ -26,11 +26,11 @@ class General(commands.Cog, name="General"):
 
     @commands.hybrid_command(
         name="about",
-        description="Get some useful (or not) information about the bot.",
+        description="Get information about the bot.",
     )
     async def botinfo(self, context: Context) -> None:
         """
-        Get some useful (or not) information about the bot.
+        Get information about the bot.
 
         :param context: The hybrid command context.
         """

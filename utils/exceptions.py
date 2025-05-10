@@ -1,4 +1,13 @@
-__all__ = ["TokenNotSet", "MissingLLMProvider", "InvalidLLMProvider", "LangchainFailiure", "LCELFailiure", "ChainMissingInput", "ChainInputInvalid"]
+__all__ = [
+    "TokenNotSet",
+    "MissingLLMProvider",
+    "InvalidLLMProvider",
+    "LangchainFailiure",
+    "LCELFailiure",
+    "ChainMissingInput",
+    "ChainInputInvalid",
+]
+
 
 # Discord
 class TokenNotSet(Exception):
@@ -9,6 +18,7 @@ class TokenNotSet(Exception):
 
     pass
 
+
 # Custom
 class MissingLLMProvider(Exception):
     """Custom Exception
@@ -16,11 +26,13 @@ class MissingLLMProvider(Exception):
     Raised when an LLM provider has not been set
     """
 
+
 class InvalidLLMProvider(Exception):
     """Custom Exception
 
     Raised when an LLM provider is not recognized
     """
+
 
 # Langchain
 class LangchainFailiure(Exception):
@@ -31,24 +43,23 @@ class LangchainFailiure(Exception):
 
     pass
 
+
 class LCELFailiure(LangchainFailiure):
     """Base Exception for LCEL
-    
+
     Exception that's raised when an operation related to LCEL (Langchain Expression Language) occurs
     """
 
     pass
 
+
 class ChainMissingInput(LCELFailiure):
-    """Exception that's raised when a chain is missing one/more inputs
-    
-    """
+    """Exception that's raised when a chain is missing one/more inputs"""
 
     pass
 
+
 class ChainInputInvalid(LCELFailiure):
-    """Exception that's raised when a chain is given one/more invalid inputs
-    
-    """
+    """Exception that's raised when a chain is given one/more invalid inputs"""
 
     pass

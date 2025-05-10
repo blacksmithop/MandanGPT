@@ -80,6 +80,7 @@ def get_openai_models():
 def get_transformer_models():
     try:
         from langchain_community.llms.vllm import VLLM
+
         # https://docs.vllm.ai/en/latest/getting_started/installation/cpu.html?device=x86
         from langchain_community.embeddings import Model2vecEmbeddings
     except ImportError:
@@ -95,9 +96,7 @@ def get_transformer_models():
         temperature=0.2,
     )
     if llm_params.embeddings_model:
-        embeddings = Model2vecEmbeddings(
-            llm_params.embeddings_model
-        )
+        embeddings = Model2vecEmbeddings(llm_params.embeddings_model)
     return llm, embeddings
 
 
