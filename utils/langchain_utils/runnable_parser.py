@@ -1,5 +1,5 @@
 from langchain_core.messages.ai import AIMessage
-from utils.models import UsageMetaData
+from utils.models.llm import UsageMetaData
 
 
 def get_content_and_metadata(message: AIMessage):
