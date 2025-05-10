@@ -1,4 +1,4 @@
-# Privacy Policy for [Bot Name]
+# Privacy Policy for MandanGPT
 
 Last Updated: May 10, 2025
 
