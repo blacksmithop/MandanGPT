@@ -7,7 +7,7 @@ from utils import FeedbackForm, generate_man_page, HelpCommandArgParser
 from typing import Optional
 
 
-class General(commands.Cog, name="General"):
+class General(commands.Cog, name="general"):
     def __init__(self, bot) -> None:
         self.bot = bot
 

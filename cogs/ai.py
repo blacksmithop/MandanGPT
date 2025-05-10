@@ -5,7 +5,7 @@ from typing import Optional
 from discord import app_commands, Embed, Interaction
 
 
-class ArtificalIntelligence(commands.Cog, name="Artificial Intelligence"):
+class ArtificalIntelligence(commands.Cog, name="ai"):
     def __init__(self, bot) -> None:
         self.bot = bot
 
