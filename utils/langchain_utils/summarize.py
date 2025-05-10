@@ -8,6 +8,7 @@ prompt = ChatPromptTemplate.from_messages(
         HumanMessagePromptTemplate.from_template("Write a concise summary of the following:```{context}```"),
     ]
 )
+# Gemini doesn't like system prompts, infer LLM type & switch chain?
 
 summarize_chain = prompt | llm | get_content_and_metadata
 
