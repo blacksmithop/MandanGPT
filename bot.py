@@ -14,7 +14,7 @@ load_dotenv()
 
 from utils import discord_bot_token
 from database import DatabaseManager
-from utils import bot_config as config, HelpCommand
+from utils import bot_config as config, HelpCommand, get_new_activity
 
 
 # Enables all intents; Support both regular & slash commands
@@ -128,13 +128,13 @@ class DiscordBot(commands.Bot):
         help_command_handler.walk_cogs_and_generate_help_text(cogs=self.cogs)
         self.help_command_handler = help_command_handler
 
-    @tasks.loop(minutes=1.0)
+    @tasks.loop(minutes=5.0)
     async def status_task(self) -> None:
         """
-        Setup the game status task of the bot.
+        Update the bot activity.
         """
-        statuses = ["with you!", "with Krypton!", "with humans!"]
-        await self.change_presence(activity=discord.Game(random.choice(statuses)))
+        activity = await get_new_activity()
+        await self.change_presence(status=discord.Status.online, activity=activity)
 
     @status_task.before_loop
     async def before_status_task(self) -> None:
