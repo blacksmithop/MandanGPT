@@ -4,8 +4,9 @@ from discord.app_commands import Cooldown
 from .embed_creator import create_datetime_embed
 from discord.ext.commands import Converter
 from utils import HelpCmdArgs
-from discord import Embed, Member, User
+from discord import Embed, Member, User, app_commands
 import shlex
+import inspect
 
 class HelpCommandArgParser(Converter):
     async def convert(self, ctx, arguments):
@@ -126,8 +127,13 @@ class HelpCommand:
                 continue
             self.cog_commands[cog_name] = {}
 
+            # Get traditional and hybrid commands
             commands = cog.get_commands()
             self.walk_commands_and_generate_help_text(commands=commands, cog_name=cog_name)
+
+            # Get app commands (slash commands)
+            app_commands = cog.get_app_commands()
+            self.walk_app_commands_and_generate_help_text(app_commands=app_commands, cog_name=cog_name)
 
     def walk_commands_and_generate_help_text(
         self, commands: List[Union[Command, HybridCommand]], cog_name: str
@@ -152,8 +158,46 @@ class HelpCommand:
             ) or "No parameters."
 
             command_help_text = (
+                f"**Type**: Hybrid Command\n"
                 f"**Description**: {description}\n"
-                f"```{help_text}```\n"
+                f"**Parameters**:\n{param_info}\n"
+                f"**Greedy**: {is_greedy}\n"
+                f"**Aliases**: {', '.join(aliases) if aliases else 'None'}\n"
+                f"**Enabled**: {enabled}\n"
+                f"**Hidden**: {hidden}\n"
+                f"**Cooldown**: {cooldown_info}"
+            )
+
+            self.cog_commands[cog_name][command_name] = command_help_text
+
+    def walk_app_commands_and_generate_help_text(
+        self, app_commands: List[app_commands.Command], cog_name: str
+    ):
+        for command in app_commands:
+            command_name = command.name
+            description = command.description or "No description available."
+            # App commands don't have a direct help attribute, so we'll use description
+            help_text = description
+            # App commands don't have aliases in the same way, but they can have autocomplete
+            aliases = []  # You can extend this if you have custom alias logic for app commands
+            enabled = True  # App commands are enabled by default
+            hidden = False  # App commands don't have a hidden attribute by default
+            is_greedy = False  # App commands don't support greedy parsing
+
+            # Get cooldown information if it exists
+            cooldown = getattr(command, 'cooldown', None)
+            cooldown_info = f"{cooldown.rate}/{cooldown.per}" if cooldown else "None"
+
+            # Format parameters for app commands
+            param_info = "\n".join(
+                f"**{param.name}**: {param.type.name if param.type else 'Any'}"
+                for param in command.parameters
+            ) or "No parameters."
+
+            command_help_text = (
+                f"**Type**: Slash Command\n"
+                f"**Description**: {description}\n"
+                f"**Help Text**:\n```{help_text}```\n"
                 f"**Parameters**:\n{param_info}\n"
                 f"**Greedy**: {is_greedy}\n"
                 f"**Aliases**: {', '.join(aliases) if aliases else 'None'}\n"
