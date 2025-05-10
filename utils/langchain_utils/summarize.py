@@ -20,5 +20,4 @@ async def summarize_text(text: str, temperature: float = 0.2, top_p: float = 0.9
         )
         return summary_text, usage_metadata
     except Exception as e:
-        print(e)
         raise ChainInputInvalid
