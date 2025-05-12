@@ -1,4 +1,4 @@
 from .discord import *
 from .llm import *
-from .langcahin import *
+from .langchain import *
 from .api import *
