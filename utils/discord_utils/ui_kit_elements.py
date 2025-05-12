@@ -5,6 +5,7 @@ from utils import summarize_text
 # Constants for default values
 DEFAULT_TEMPERATURE = 0.2
 DEFAULT_TOP_P = 0.9
+DEFAULT_TOP_K = 40
 DEFAULT_NUM_CTX = 100
 
 
@@ -30,12 +31,14 @@ class SummarizeModal(Modal, title="Summarize Text"):
         summary_type: str,
         temperature: float = DEFAULT_TEMPERATURE,
         top_p: float = DEFAULT_TOP_P,
+        top_k: int = DEFAULT_TOP_K,
         num_ctx: int = DEFAULT_NUM_CTX,
     ):
         super().__init__()
         self.summary_type = summary_type
         self.temperature = temperature
         self.top_p = top_p
+        self.top_k = top_k
         self.num_ctx = num_ctx
 
         # Text input for content to summarize
@@ -60,6 +63,11 @@ class SummarizeModal(Modal, title="Summarize Text"):
             label="Top P (0-1, diversity)", default=str(top_p), required=True
         )
         self.add_item(self.top_p_input)
+        
+        self.top_k_input = TextInput(
+            label="Top K (0-100, diversity)", default=str(top_k), required=True
+        )
+        self.add_item(self.top_k_input)
 
         self.num_ctx_input = TextInput(
             label="Context Length (tokens)", default=str(num_ctx), required=True
@@ -71,12 +79,15 @@ class SummarizeModal(Modal, title="Summarize Text"):
             # Validate inputs first (fast operations)
             temperature = float(self.temp_input.value)
             top_p = float(self.top_p_input.value)
+            top_k = int(self.top_k_input.value)
             num_ctx = int(self.num_ctx_input.value)
 
-            if not 0 <= temperature <= 2:
-                raise ValueError("Temperature must be between 0 and 2")
+            if not 0 <= temperature <= 100:
+                raise ValueError("Temperature must be between 0 and 100")
             if not 0 <= top_p <= 1:
-                raise ValueError("Top P must be between 0 and 1")
+                raise ValueError("Top P must be between 0 and 1") 
+            if not 0 <= top_k <= 100:
+                raise ValueError("Top K must be between 0 and 100")
             if num_ctx <= 0:
                 raise ValueError("Context length must be positive")
 
@@ -88,6 +99,7 @@ class SummarizeModal(Modal, title="Summarize Text"):
                 text=self.text_input.value,
                 temperature=temperature,
                 top_p=top_p,
+                top_k=top_k,
                 num_ctx=num_ctx,
             )
 
@@ -99,6 +111,7 @@ class SummarizeModal(Modal, title="Summarize Text"):
             )
             embed.add_field(name="Temperature", value=temperature, inline=True)
             embed.add_field(name="Top P", value=top_p, inline=True)
+            embed.add_field(name="Top K", value=top_k, inline=True)
             embed.add_field(name="Context Length", value=num_ctx, inline=True)
 
             if usage_metadata:
@@ -148,13 +161,13 @@ class SummaryTypeView(View):
         summary_type = interaction.data["values"][0]
 
         type_params = {
-            "short": (0.2, 0.9, DEFAULT_NUM_CTX),
-            "medium": (0.2, 0.9, DEFAULT_NUM_CTX * 3),
-            "elaborate": (0.5, 0.95, DEFAULT_NUM_CTX * 5),
+            "short": (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX),
+            "medium": (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX * 3),
+            "elaborate": (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX * 5),
         }
 
-        temperature, top_p, num_ctx = type_params.get(
-            summary_type, (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_NUM_CTX)
+        temperature, top_p, top_k, num_ctx = type_params.get(
+            summary_type, (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX)
         )
 
         # Now use followup to send the modal

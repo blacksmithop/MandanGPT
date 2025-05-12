@@ -40,8 +40,8 @@ if llm_provider := getenv("LLM_PROVIDER"):
                 "temperature": temperature_config,
                 "num_ctx": num_ctx_config,
                 # "seed": seed_config,
-                # "top_k":top_k_config,
-                # "top_p": top_p_config,
+                "top_k":top_k_config,
+                "top_p": top_p_config,
                 # "min_p": min_p_config
             }
         case "transformers":
