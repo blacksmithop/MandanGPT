@@ -35,8 +35,8 @@ def generate_man_page(
     # Base embed setup
     help_embed = create_datetime_embed(
         user=user,
-        title="🖥️ MandanGPT Help Manual",
-        description="A comprehensive guide to available commands and modules."
+        title="Help",
+        description="List of modules and commands"
     )
 
     # Handle parsing errors
@@ -52,12 +52,12 @@ def generate_man_page(
     if not args or (not args.cog_name and not args.cmd_name):
         cog_names = list(cog_command_mapping.keys())
         help_embed.add_field(
-            name="📚 Available Modules",
-            value="\n".join(f"**{i+1}.** {name}" for i, name in enumerate(cog_names)) or "No modules available.",
+            name="Modules",
+            value="\n".join(f"**{i+1}.** {name}" for i, name in enumerate(cog_names)) or "No modules available",
             inline=False
         )
         help_embed.add_field(
-            name="ℹ️ Usage",
+            name="Usage",
             value="Use `!help [module]` to see commands in a module\nUse `!help [module] [command]` for command details",
             inline=False
         )
@@ -74,7 +74,7 @@ def generate_man_page(
         cmd_name = None
     else:
         help_embed.add_field(
-            name="⚠️ Error",
+            name="Error",
             value=f"Could not find module '{cog_name or ambiguous_name}'. Use `!help` to see available modules.",
             inline=False
         )
@@ -83,15 +83,15 @@ def generate_man_page(
     # Case 2: Cog specified, no command - show all commands in cog
     cog_commands = cog_command_mapping[cog_name]
     if not cmd_name:
-        help_embed.title = f"🖥️ MandanGPT Help - {cog_name}"
+        help_embed.title = f"Module: {cog_name}"
         command_list = "\n".join(f"**{name}**" for name in cog_commands.keys()) or "No commands available."
         help_embed.add_field(
-            name="📜 Commands",
+            name="Commands",
             value=command_list,
             inline=True
         )
         help_embed.add_field(
-            name="ℹ️ Usage",
+            name="Usage",
             value=f"Use `!help {cog_name} [command]` to see details for a specific command.",
             inline=False
         )
@@ -99,16 +99,16 @@ def generate_man_page(
 
     # Case 3: Cog and command specified - show command details
     if cmd_name in cog_commands:
-        help_embed.title = f"🖥️ MandanGPT Help - {cog_name}::{cmd_name}"
+        help_embed.title = f"{cog_name}::{cmd_name}"
         help_embed.add_field(
-            name="📋 Command Details",
+            name="Informtation",
             value=cog_commands[cmd_name],
             inline=False
         )
         return help_embed
     else:
         help_embed.add_field(
-            name="⚠️ Error",
+            name="Error",
             value=f"Command '{cmd_name}' not found in module '{cog_name}'. Use `!help {cog_name}` to see available commands.",
             inline=False
         )
@@ -141,7 +141,6 @@ class HelpCommand:
         for command in commands:
             command_name = command.name
             description = command.description or "No description available."
-            help_text = command.help or "No additional help text."
             aliases = command.aliases
             params = command.clean_params
             enabled = command.enabled
@@ -177,7 +176,6 @@ class HelpCommand:
             command_name = command.name
             description = command.description or "No description available."
             # App commands don't have a direct help attribute, so we'll use description
-            help_text = description
             # App commands don't have aliases in the same way, but they can have autocomplete
             aliases = []  # You can extend this if you have custom alias logic for app commands
             enabled = True  # App commands are enabled by default
@@ -197,7 +195,6 @@ class HelpCommand:
             command_help_text = (
                 f"**Type**: Slash Command\n"
                 f"**Description**: {description}\n"
-                f"**Help Text**:\n```{help_text}```\n"
                 f"**Parameters**:\n{param_info}\n"
                 f"**Greedy**: {is_greedy}\n"
                 f"**Aliases**: {', '.join(aliases) if aliases else 'None'}\n"
