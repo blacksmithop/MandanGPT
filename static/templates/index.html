@@ -1,195 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Discord Bot</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="./static/js/index.js"></script>
-    <link rel="stylesheet" href="./static/css/index.css" />
-    <link rel="stylesheet" href="./static/css/discord.css" />
-  </head>
-  <body
-    class="bg-pure-white dark:bg-pure-black text-pure-black dark:text-pure-white min-h-screen flex flex-col items-center justify-between transition-colors duration-300"
-  >
-    <!-- Header Section -->
-    <header
-      class="fixed top-0 left-0 w-full h-16 bg-gray-light dark:bg-gray-dark flex items-center justify-end px-4 shadow-md z-50"
-    >
-      <button
-        id="theme-toggle"
-        class="p-2 rounded-full bg-gray-200 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 transition mr-4"
-      >
-        <svg
-          id="sun-icon"
-          class="w-6 h-6 hidden dark:block"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-          ></path>
-        </svg>
-        <svg
-          id="moon-icon"
-          class="w-6 h-6 block dark:hidden"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          ></path>
-        </svg>
-      </button>
 
-      <div id="auth-section">
-        {% if user %}
-        <!-- OAuth2 Success: Show user avatar and details -->
-        <div class="avatar-container">
-          <img
-            id="user-avatar"
-            class="avatar"
-            alt="User Avatar"
-            src="https://cdn.discordapp.com/avatars/{{ user.id }}/{{ user.avatar }}.png"
-          />
-          <div class="user-card bg-pure-white dark:bg-gray-dark">
-            <div
-              class="h-16 bg-{{ user.banner_color|default('#8033cd') }}"
-            ></div>
-            <img
-              id="user-avatar-card"
-              class="avatar"
-              alt="User Avatar"
-              src="https://cdn.discordapp.com/avatars/{{ user.id }}/{{ user.avatar }}.png"
-            />
-            <div
-              class="mt-[50px] px-2.5 pb-2.5 text-center font-[Helvetica,sans-serif]"
-            >
-              <div class="text-xl font-bold">{{ user.username }}</div>
-              <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {{ user.global_name|default(user.username) }}
-              </div>
-              <a
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discord Bot</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./static/js/index.js"></script>
+  <link rel="stylesheet" href="./static/css/index.css" />
+  <link rel="stylesheet" href="./static/css/discord.css" />
+</head>
+
+<body
+  class="bg-pure-white dark:bg-pure-black text-pure-black dark:text-pure-white min-h-screen flex flex-col items-center justify-between transition-colors duration-300">
+  <!-- Header Section -->
+  <header
+    class="fixed top-0 left-0 w-full h-16 bg-gray-light dark:bg-gray-dark flex items-center justify-end px-4 shadow-md z-50">
+    <button id="theme-toggle"
+      class="p-2 rounded-full bg-gray-200  dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 transition mr-4">
+      <svg id="sun-icon" class="w-6 h-6 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+        </path>
+      </svg>
+      <svg id="moon-icon" class="w-6 h-6 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+      </svg>
+    </button>
+
+    <div id="auth-section">
+      {% if user %}
+      <!-- OAuth2 Success: Show user avatar and details -->
+      <div class="avatar-container">
+        <img id="user-avatar" class="avatar border-pure-black dark:border-gray-500" alt="User Avatar"
+          src="https://cdn.discordapp.com/avatars/{{ user.id }}/{{ user.avatar }}.png" />
+        <div class="user-card bg-pure-white dark:bg-gray-dark">
+          <div class="h-14" style="background: {{ user.banner_color|default('#8033cd') }}"></div>
+          <img id="user-avatar-card" class="avatar" alt="User Avatar"
+            src="https://cdn.discordapp.com/avatars/{{ user.id }}/{{ user.avatar }}.png" />
+          <div class="mt-[30px] px-2.5 pb-2.5 text-center font-[Helvetica,sans-serif]">
+            <div class="text-xl font-bold">{{ user.username }}</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {{ user.global_name|default(user.username) }}
+            </div>
+            <!-- <a
                 href="upload.html"
                 class="mt-2 inline-block px-4 py-1.5 bg-pure-black dark:bg-pure-white text-pure-white dark:text-pure-black rounded-md hover:bg-gray-700 dark:hover:bg-gray-300 transition"
               >
                 Upload
-              </a>
-            </div>
+              </a> -->
           </div>
         </div>
-        {% else %}
-        <!-- OAuth2 Failure or Not Logged In: Show login button -->
-        <a
-          id="discord-login"
-          href="/authenticate"
-          class="flex items-center px-3 py-1.5 bg-[#5865F2] text-white rounded-md hover:bg-[#4752C4] transition"
-        >
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.077.077 0 0 0-.032.027C.533 9.045-.32 13.579.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.677 14.677 0 0 0 1.226-1.992.077.077 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 0-.08.028 9.197 9.197 0 0 0-.398.48.077.077 0 0 0-.01.09c.678.773 1.447 1.465 2.312 2.03a.077.077 0 0 0 .078.01c.618-.235 1.22-.48 1.807-.7a.077.077 0 0 0 .045-.071 16.6 16.6 0 0 0 1.226-1.994.077.077 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 0-.08.028 9.197 9.197 0 0 0-.398.48.077.077 0 0 0-.01.09c.678.773 1.447 1.465 2.312 2.03a.077.077 0 0 0 .078.01c.618-.235 1.22-.48 1.807-.7a.077.077 0 0 0 .045-.071c.429-.828.873-1.674 1.226-1.994a.077.077 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 0-.08.028 9.197 9.197 0 0 0-.398.48.077.077 0 0 0-.01.09c.678.773 1.447 1.465 2.312 2.03a.077.077 0 0 0 .078.01c2.06-.785 4.14-1.964 5.993-3.03a.082.082 0 0 0 .031-.057c.42-4.478-.433-9.012-3.513-13.688a.077.077 0 0 0-.032-.027zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.957-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.956 2.419-2.157 2.419zm7.974 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.957-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.946 2.419-2.157 2.419z"
-            />
-          </svg>
-          Login
-        </a>
-        {% endif %}
       </div>
-    </header>
+      {% else %}
+      <!-- OAuth2 Failure or Not Logged In: Show login button -->
+      <a id="discord-login" href="/authenticate"
+        class="flex items-center px-3 py-1.5 bg-[#5865F2] text-white rounded-md hover:bg-[#4752C4] transition">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.077.077 0 0 0-.032.027C.533 9.045-.32 13.579.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.677 14.677 0 0 0 1.226-1.992.077.077 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 0-.08.028 9.197 9.197 0 0 0-.398.48.077.077 0 0 0-.01.09c.678.773 1.447 1.465 2.312 2.03a.077.077 0 0 0 .078.01c.618-.235 1.22-.48 1.807-.7a.077.077 0 0 0 .045-.071 16.6 16.6 0 0 0 1.226-1.994.077.077 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 0-.08.028 9.197 9.197 0 0 0-.398.48.077.077 0 0 0-.01.09c.678.773 1.447 1.465 2.312 2.03a.077.077 0 0 0 .078.01c.618-.235 1.22-.48 1.807-.7a.077.077 0 0 0 .045-.071c.429-.828.873-1.674 1.226-1.994a.077.077 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 0-.08.028 9.197 9.197 0 0 0-.398.48.077.077 0 0 0-.01.09c.678.773 1.447 1.465 2.312 2.03a.077.077 0 0 0 .078.01c2.06-.785 4.14-1.964 5.993-3.03a.082.082 0 0 0 .031-.057c.42-4.478-.433-9.012-3.513-13.688a.077.077 0 0 0-.032-.027zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.957-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.956 2.419-2.157 2.419zm7.974 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.957-2.419 2.157-2.419 1.21 0 2.176 1.095 2.157 2.419 0 1.333-.946 2.419-2.157 2.419z" />
+        </svg>
+        Login
+      </a>
+      {% endif %}
+    </div>
+  </header>
 
-    <!-- Hero Section -->
-    <div
-      class="flex flex-col items-center space-y-8 max-w-4xl w-full px-4 pt-24 pb-16"
-    >
-      <img
-        src="./static/images/discord_bot.png"
-        alt="Bot Icon"
-        class="w-32 h-32 rounded-full border-4 border-pure-black dark:border-gray-500"
-      />
+  <!-- Hero Section -->
+  <div class="flex flex-col items-center space-y-8 max-w-4xl w-full px-4 pt-24 pb-16">
+    <img src="./static/images/discord_bot.png" alt="Bot Icon"
+      class="w-32 h-32 rounded-full border-4 border-pure-black dark:border-gray-500" />
 
-      <div class="text-center">
-        <h1 class="text-3xl font-bold">MandanGPT</h1>
-        <p class="mt-2 text-lg text-gray-500 dark:text-gray-400">
-          A minimal, powerful bot for your Discord server.
-        </p>
-        <a
-          href="https://discord.com/oauth2/authorize?client_id=1233258905157767168&scope=bot&permissions=563368716257344"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="mt-4 inline-block px-6 py-2 bg-pure-black dark:bg-pure-white text-pure-white dark:text-pure-black rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300 transition"
-        >
-          Invite Bot
-        </a>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full">
-        <div class="bg-gray-light dark:bg-gray-dark p-4 rounded-lg text-center">
-          <h3 class="text-xl font-semibold">1</h3>
-          <p class="text-gray-600 dark:text-gray-400">Servers</p>
-        </div>
-        <div class="bg-gray-light dark:bg-gray-dark p-4 rounded-lg text-center">
-          <h3 class="text-xl font-semibold">2</h3>
-          <p class="text-gray-600 dark:text-gray-400">Users</p>
-        </div>
-        <div class="bg-gray-light dark:bg-gray-dark p-4 rounded-lg text-center">
-          <h3 class="text-xl font-semibold">99.9%</h3>
-          <p class="text-gray-600 dark:text-gray-400">Uptime</p>
-        </div>
-        <div class="bg-gray-light dark:bg-gray-dark p-4 rounded-lg text-center">
-          <h3 class="text-xl font-semibold">1000</h3>
-          <p class="text-gray-600 dark:text-gray-400">Invocations</p>
-        </div>
-      </div>
+    <div class="text-center">
+      <h1 class="text-3xl font-bold">MandanGPT</h1>
+      <p class="mt-2 text-lg text-gray-500 dark:text-gray-400">
+        A minimal, powerful bot for your Discord server.
+      </p>
+      <a href="https://discord.com/oauth2/authorize?client_id=1233258905157767168&scope=bot&permissions=563368716257344"
+        target="_blank" rel="noopener noreferrer"
+        class="mt-4 inline-block px-6 py-2 bg-pure-black dark:bg-pure-white text-pure-white dark:text-pure-black rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300 transition">
+        Invite Bot
+      </a>
     </div>
 
-    <!-- Footer Section -->
-    <footer class="w-full bg-gray-light dark:bg-gray-dark py-4 text-center">
-      <div class="flex items-center justify-center space-x-4">
-        <p class="text-lg text-pure-black dark:text-pure-white tracking-wide">
-          © 2025
-          <a
-            href="https://github.com/blacksmithop"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="underline hover:text-gray-600 dark:hover:text-gray-400"
-            >blacksmithop</a
-          >
-          | All rights reserved.
-        </p>
-        <a
-          href="https://github.com/blacksmithop/MandanGPT"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <svg
-            class="w-6 h-6 text-gray-600 dark:text-gray-400 hover:text-pure-black dark:hover:text-pure-white"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
-            ></path>
-          </svg>
-        </a>
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full">
+      <div class="bg-gray-light dark:bg-gray-dark p-4 rounded-lg text-center">
+        <h3 class="text-xl font-semibold">1</h3>
+        <p class="text-gray-600 dark:text-gray-400">Servers</p>
       </div>
-    </footer>
+      <div class="bg-gray-light dark:bg-gray-dark p-4 rounded-lg text-center">
+        <h3 class="text-xl font-semibold">2</h3>
+        <p class="text-gray-600 dark:text-gray-400">Users</p>
+      </div>
+      <div class="bg-gray-light dark:bg-gray-dark p-4 rounded-lg text-center">
+        <h3 class="text-xl font-semibold">99.9%</h3>
+        <p class="text-gray-600 dark:text-gray-400">Uptime</p>
+      </div>
+      <div class="bg-gray-light dark:bg-gray-dark p-4 rounded-lg text-center">
+        <h3 class="text-xl font-semibold">1000</h3>
+        <p class="text-gray-600 dark:text-gray-400">Invocations</p>
+      </div>
+    </div>
+  </div>
 
-    <script src="./static/js/dark_mode.js"></script>
-    <!-- <script src="./static/js/oauth.js"></script> -->
-  </body>
+  <!-- Footer Section -->
+  <footer class="w-full bg-gray-light dark:bg-gray-dark py-4 text-center">
+    <div class="flex items-center justify-center space-x-4">
+      <p class="text-lg text-pure-black dark:text-pure-white tracking-wide">
+        © 2025
+        <a href="https://github.com/blacksmithop" target="_blank" rel="noopener noreferrer"
+          class="underline hover:text-gray-600 dark:hover:text-gray-400">blacksmithop</a>
+        | All rights reserved.
+      </p>
+      <a href="https://github.com/blacksmithop/MandanGPT" target="_blank" rel="noopener noreferrer">
+        <svg class="w-6 h-6 text-gray-600 dark:text-gray-400 hover:text-pure-black dark:hover:text-pure-white"
+          fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12">
+          </path>
+        </svg>
+      </a>
+    </div>
+  </footer>
+
+  <script src="./static/js/dark_mode.js"></script>
+</body>
+
 </html>
