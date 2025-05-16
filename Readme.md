@@ -25,11 +25,3 @@ Run the bot
 ```bash
 python bot.py
 ```
-
-# TODO:
-
-Document ingestion pipeline for CRAG - Langgraph
-
-1. Build UI
-2. Build basic API for stat fetching
-3. Build Frontend

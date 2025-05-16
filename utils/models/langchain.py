@@ -1,7 +1,13 @@
 from langchain_core.runnables import ConfigurableField
 
 __all__ = [
-    "temperature_config", "num_ctx_config", "max_tokens_config", "seed_config", "top_k_config", "top_p_config", "min_p_config"
+    "temperature_config",
+    "num_ctx_config",
+    "max_tokens_config",
+    "seed_config",
+    "top_k_config",
+    "top_p_config",
+    "min_p_config",
 ]
 # Langchain ConfigurableField
 temperature_config = ConfigurableField(
@@ -40,4 +46,3 @@ min_p_config = ConfigurableField(
     name="min p",
     description="Alternative to the top_p, and aims to ensure a balance of quality and variety. The parameter p represents the minimum probability for a token to be considered, relative to the probability of the most likely token. For example, with p=0.05 and the most likely token having a probability of 0.9, logits with a value less than 0.045 are filtered out.",
 )
-

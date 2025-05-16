@@ -63,7 +63,7 @@ class SummarizeModal(Modal, title="Summarize Text"):
             label="Top P (0-1, diversity)", default=str(top_p), required=True
         )
         self.add_item(self.top_p_input)
-        
+
         self.top_k_input = TextInput(
             label="Top K (0-100, diversity)", default=str(top_k), required=True
         )
@@ -85,7 +85,7 @@ class SummarizeModal(Modal, title="Summarize Text"):
             if not 0 <= temperature <= 100:
                 raise ValueError("Temperature must be between 0 and 100")
             if not 0 <= top_p <= 1:
-                raise ValueError("Top P must be between 0 and 1") 
+                raise ValueError("Top P must be between 0 and 1")
             if not 0 <= top_k <= 100:
                 raise ValueError("Top K must be between 0 and 100")
             if num_ctx <= 0:
@@ -161,13 +161,29 @@ class SummaryTypeView(View):
         summary_type = interaction.data["values"][0]
 
         type_params = {
-            "short": (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX),
-            "medium": (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX * 3),
-            "elaborate": (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX * 5),
+            "short": (
+                DEFAULT_TEMPERATURE,
+                DEFAULT_TOP_P,
+                DEFAULT_TOP_K,
+                DEFAULT_NUM_CTX,
+            ),
+            "medium": (
+                DEFAULT_TEMPERATURE,
+                DEFAULT_TOP_P,
+                DEFAULT_TOP_K,
+                DEFAULT_NUM_CTX * 3,
+            ),
+            "elaborate": (
+                DEFAULT_TEMPERATURE,
+                DEFAULT_TOP_P,
+                DEFAULT_TOP_K,
+                DEFAULT_NUM_CTX * 5,
+            ),
         }
 
         temperature, top_p, top_k, num_ctx = type_params.get(
-            summary_type, (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX)
+            summary_type,
+            (DEFAULT_TEMPERATURE, DEFAULT_TOP_P, DEFAULT_TOP_K, DEFAULT_NUM_CTX),
         )
 
         # Now use followup to send the modal

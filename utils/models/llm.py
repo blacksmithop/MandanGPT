@@ -9,6 +9,7 @@ __all__ = [
     "UsageMetaData",
 ]
 
+
 # LLM
 class OllamaConfig(BaseModel):
     url: str
@@ -34,6 +35,7 @@ class OpenAIConfig(BaseModel):
     api_endpoint: str
     chat_model: str
     embeddings_model: Optional[str] = None
+
 
 # Usage Metadata
 class UsageMetaData(BaseModel):

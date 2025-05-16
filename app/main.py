@@ -25,14 +25,14 @@ app.add_middleware(SessionMiddleware, secret_key=getenv("SECRET_KEY"))
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="static/templates")
 
+
 @app.get("/")
 async def index(request: Request):
     user = request.session.get("user")
     return templates.TemplateResponse(
-        request=request,
-        name="index.html",
-        context={"user": user, "error": None}
+        request=request, name="index.html", context={"user": user, "error": None}
     )
+
 
 @app.get("/authenticate")
 async def authenticate(request: Request):
@@ -45,8 +45,11 @@ async def authenticate(request: Request):
     )
     return RedirectResponse(auth_url)
 
+
 @app.get("/oauth2")
-async def oauth2(request: Request, code: Optional[str] = None, state: Optional[str] = None):
+async def oauth2(
+    request: Request, code: Optional[str] = None, state: Optional[str] = None
+):
     if state != request.session.get("state"):
         raise HTTPException(status_code=400, detail="Invalid state parameter")
     if not code:
@@ -89,10 +92,11 @@ async def oauth2(request: Request, code: Optional[str] = None, state: Optional[s
         return templates.TemplateResponse(
             request=request,
             name="index.html",
-            context={"user": None, "error": f"Authentication failed: {str(e)}"}
+            context={"user": None, "error": f"Authentication failed: {str(e)}"},
         )
 
     return RedirectResponse(url="/")
+
 
 @app.get("/logout")
 async def logout(request: Request):

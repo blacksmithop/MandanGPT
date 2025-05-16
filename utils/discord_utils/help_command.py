@@ -8,6 +8,7 @@ from discord import Embed, Member, User, app_commands
 import shlex
 import inspect
 
+
 class HelpCommandArgParser(Converter):
     async def convert(self, ctx, arguments):
         try:
@@ -23,9 +24,14 @@ class HelpCommandArgParser(Converter):
         if len(args) == 1:
             return HelpCmdArgs(cog_name=args[0])
         elif len(args) == 2:
-            return HelpCmdArgs(cog_name=args[0], cmd_name=args[1], cog_or_cmd_name=args[0])
+            return HelpCmdArgs(
+                cog_name=args[0], cmd_name=args[1], cog_or_cmd_name=args[0]
+            )
         else:
-            return HelpCmdArgs(error="Invalid number of arguments. Use: [cog] or [cog] [command]")
+            return HelpCmdArgs(
+                error="Invalid number of arguments. Use: [cog] or [cog] [command]"
+            )
+
 
 def generate_man_page(
     cog_command_mapping: dict,
@@ -34,18 +40,12 @@ def generate_man_page(
 ):
     # Base embed setup
     help_embed = create_datetime_embed(
-        user=user,
-        title="Help",
-        description="List of modules and commands"
+        user=user, title="Help", description="List of modules and commands"
     )
 
     # Handle parsing errors
-    if getattr(args, 'error', None):
-        help_embed.add_field(
-            name="⚠️ Error",
-            value=args.error,
-            inline=False
-        )
+    if getattr(args, "error", None):
+        help_embed.add_field(name="⚠️ Error", value=args.error, inline=False)
         return help_embed
 
     # Case 1: No arguments - show all cogs
@@ -53,13 +53,14 @@ def generate_man_page(
         cog_names = list(cog_command_mapping.keys())
         help_embed.add_field(
             name="Modules",
-            value="\n".join(f"**{i+1}.** {name}" for i, name in enumerate(cog_names)) or "No modules available",
-            inline=False
+            value="\n".join(f"**{i+1}.** {name}" for i, name in enumerate(cog_names))
+            or "No modules available",
+            inline=False,
         )
         help_embed.add_field(
             name="Usage",
             value="Use `!help [module]` to see commands in a module\nUse `!help [module] [command]` for command details",
-            inline=False
+            inline=False,
         )
         return help_embed
 
@@ -76,7 +77,7 @@ def generate_man_page(
         help_embed.add_field(
             name="Error",
             value=f"Could not find module '{cog_name or ambiguous_name}'. Use `!help` to see available modules.",
-            inline=False
+            inline=False,
         )
         return help_embed
 
@@ -84,16 +85,15 @@ def generate_man_page(
     cog_commands = cog_command_mapping[cog_name]
     if not cmd_name:
         help_embed.title = f"Module: {cog_name}"
-        command_list = "\n".join(f"**{name}**" for name in cog_commands.keys()) or "No commands available."
-        help_embed.add_field(
-            name="Commands",
-            value=command_list,
-            inline=True
+        command_list = (
+            "\n".join(f"**{name}**" for name in cog_commands.keys())
+            or "No commands available."
         )
+        help_embed.add_field(name="Commands", value=command_list, inline=True)
         help_embed.add_field(
             name="Usage",
             value=f"Use `!help {cog_name} [command]` to see details for a specific command.",
-            inline=False
+            inline=False,
         )
         return help_embed
 
@@ -101,18 +101,17 @@ def generate_man_page(
     if cmd_name in cog_commands:
         help_embed.title = f"{cog_name}::{cmd_name}"
         help_embed.add_field(
-            name="Informtation",
-            value=cog_commands[cmd_name],
-            inline=False
+            name="Informtation", value=cog_commands[cmd_name], inline=False
         )
         return help_embed
     else:
         help_embed.add_field(
             name="Error",
             value=f"Command '{cmd_name}' not found in module '{cog_name}'. Use `!help {cog_name}` to see available commands.",
-            inline=False
+            inline=False,
         )
         return help_embed
+
 
 class HelpCommand:
     def __init__(self, prefix: str):
@@ -129,11 +128,15 @@ class HelpCommand:
 
             # Get traditional and hybrid commands
             commands = cog.get_commands()
-            self.walk_commands_and_generate_help_text(commands=commands, cog_name=cog_name)
+            self.walk_commands_and_generate_help_text(
+                commands=commands, cog_name=cog_name
+            )
 
             # Get app commands (slash commands)
             app_commands = cog.get_app_commands()
-            self.walk_app_commands_and_generate_help_text(app_commands=app_commands, cog_name=cog_name)
+            self.walk_app_commands_and_generate_help_text(
+                app_commands=app_commands, cog_name=cog_name
+            )
 
     def walk_commands_and_generate_help_text(
         self, commands: List[Union[Command, HybridCommand]], cog_name: str
@@ -151,10 +154,13 @@ class HelpCommand:
             cooldown_info = f"{cooldown.rate}/{cooldown.per}" if cooldown else "None"
 
             # Format parameters
-            param_info = "\n".join(
-                f"**{name}**: {param.annotation.__name__ if param.annotation != inspect.Parameter.empty else 'Any'}"
-                for name, param in params.items()
-            ) or "No parameters."
+            param_info = (
+                "\n".join(
+                    f"**{name}**: {param.annotation.__name__ if param.annotation != inspect.Parameter.empty else 'Any'}"
+                    for name, param in params.items()
+                )
+                or "No parameters."
+            )
 
             command_help_text = (
                 f"**Type**: Hybrid Command\n"
@@ -177,20 +183,25 @@ class HelpCommand:
             description = command.description or "No description available."
             # App commands don't have a direct help attribute, so we'll use description
             # App commands don't have aliases in the same way, but they can have autocomplete
-            aliases = []  # You can extend this if you have custom alias logic for app commands
+            aliases = (
+                []
+            )  # You can extend this if you have custom alias logic for app commands
             enabled = True  # App commands are enabled by default
             hidden = False  # App commands don't have a hidden attribute by default
             is_greedy = False  # App commands don't support greedy parsing
 
             # Get cooldown information if it exists
-            cooldown = getattr(command, 'cooldown', None)
+            cooldown = getattr(command, "cooldown", None)
             cooldown_info = f"{cooldown.rate}/{cooldown.per}" if cooldown else "None"
 
             # Format parameters for app commands
-            param_info = "\n".join(
-                f"**{param.name}**: {param.type.name if param.type else 'Any'}"
-                for param in command.parameters
-            ) or "No parameters."
+            param_info = (
+                "\n".join(
+                    f"**{param.name}**: {param.type.name if param.type else 'Any'}"
+                    for param in command.parameters
+                )
+                or "No parameters."
+            )
 
             command_help_text = (
                 f"**Type**: Slash Command\n"

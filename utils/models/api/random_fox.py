@@ -1,6 +1,7 @@
 from pydantic import BaseModel, field_validator
 from urllib.parse import unquote
 
+
 class RandomFox(BaseModel):
     image: str
     link: str

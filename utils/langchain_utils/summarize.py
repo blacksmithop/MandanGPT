@@ -16,7 +16,11 @@ summarize_chain = prompt | llm | get_content_and_metadata
 
 
 async def summarize_text(
-    text: str, temperature: float = 0.2, top_p: float = 0.9, top_k: int = 40,  num_ctx: int = 250
+    text: str,
+    temperature: float = 0.2,
+    top_p: float = 0.9,
+    top_k: int = 40,
+    num_ctx: int = 250,
 ):
     try:
         summary_text, usage_metadata = await summarize_chain.ainvoke(
@@ -26,7 +30,7 @@ async def summarize_text(
                     "temperature": temperature,
                     "num_ctx": num_ctx,
                     "top_p": top_p,
-                    "top_k": top_k
+                    "top_k": top_k,
                 }
             },
         )
