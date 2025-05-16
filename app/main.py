@@ -14,7 +14,7 @@ load_dotenv()
 # Discord OAuth2 configuration
 DISCORD_CLIENT_ID = getenv("DISCORD_APP_CLIENT_ID")
 DISCORD_CLIENT_SECRET = getenv("DISCORD_APP_SECRET")
-REDIRECT_URI = "http://localhost:8080/oauth2"
+REDIRECT_URI = getenv("REDIRECT_URI")
 DISCORD_AUTH_URL = "https://discord.com/api/oauth2/authorize"
 DISCORD_TOKEN_URL = "https://discord.com/api/oauth2/token"
 DISCORD_API_URL = "https://discord.com/api/users/@me"
