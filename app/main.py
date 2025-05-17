@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, UploadFile, Form, BackgroundTasks, HTTPException
+from fastapi.responses import JSONResponse
+from pydantic import HttpUrl
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -8,6 +10,9 @@ import httpx
 from os import getenv
 from secrets import token_urlsafe
 from typing import Optional
+from uuid import uuid4
+from asyncio import sleep
+
 
 load_dotenv()
 
@@ -32,6 +37,72 @@ async def index(request: Request):
     return templates.TemplateResponse(
         request=request, name="index.html", context={"user": user, "error": None}
     )
+
+
+# In-memory storage for task progress (replace with Redis or database in production)
+tasks = {}
+
+
+# Simulated processing function for the three stages
+async def process_data(
+    task_id: str,
+    url: Optional[str] = None,
+    username: Optional[str] = None,
+    file: Optional[bytes] = None,
+):
+    # Stage 1: Reading Upload
+    for i in range(1, 101):
+        tasks[task_id]["reading"] = i
+        await sleep(0.05)  # Simulate reading delay
+
+    # Stage 2: Data Processing
+    for i in range(1, 101):
+        tasks[task_id]["processing"] = i
+        await sleep(0.05)  # Simulate processing delay
+
+    # Stage 3: Embedding
+    for i in range(1, 101):
+        tasks[task_id]["embedding"] = i
+        await sleep(0.05)  # Simulate embedding delay
+
+
+@app.post("/upload")
+async def upload_data(
+    background_tasks: BackgroundTasks,
+    url: Optional[HttpUrl] = Form(None),
+    username: Optional[str] = Form(None),
+    file: Optional[UploadFile] = None,
+):
+    # Generate a unique task ID
+    task_id = uuid4().hex
+
+    # Initialize task progress
+    tasks[task_id] = {"reading": 0, "processing": 0, "embedding": 0}
+
+    # Read file content if provided
+    file_content = None
+    if file:
+        file_content = await file.read()
+
+    # Start background processing
+    background_tasks.add_task(process_data, task_id, url, username, file_content)
+
+    return JSONResponse({"task_id": task_id})
+
+
+@app.get("/ingest")
+async def upload(request: Request):
+    user = request.session.get("user")
+    return templates.TemplateResponse(
+        request=request, name="ingest.html", context={"user": user, "error": None}
+    )
+
+
+@app.get("/progress/{task_id}")
+async def get_progress(task_id: str):
+    if task_id not in tasks:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return tasks[task_id]
 
 
 @app.get("/authenticate")

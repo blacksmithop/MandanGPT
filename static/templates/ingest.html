@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  {% include 'head.html' ignore missing %}
+</head>
+<body class="bg-pure-white dark:bg-pure-black text-pure-black dark:text-pure-white min-h-screen flex flex-col items-center justify-between transition-colors duration-300">
+  <!-- Header Section -->
+  <header class="fixed top-0 left-0 w-full h-16 bg-gray-light dark:bg-gray-dark flex items-center justify-end px-4 shadow-md z-50">
+    {% include 'darkmode.html' ignore missing %}
+    {% include 'oauth.html' ignore missing %}
+  </header>
+
+  <!-- Data Ingestion Section -->
+  <div class="flex flex-col items-center space-y-8 max-w-4xl w-full px-4 pt-24 pb-16">
+    <div class="text-center">
+      <h1 class="text-3xl font-bold">Data Ingestion</h1>
+      <p class="mt-2 text-lg text-gray-500 dark:text-gray-400">Upload URLs, usernames, or files for processing.</p>
+    </div>
+
+    <div class="w-full bg-gray-light dark:bg-gray-dark p-6 rounded-lg shadow-md">
+      <form id="upload-form" enctype="multipart/form-data">
+        <div class="mb-4">
+          <label for="url" class="block text-lg font-medium mb-2 text-gray-600 dark:text-gray-400">URL</label>
+          <input
+            type="url"
+            id="url"
+            name="url"
+            placeholder="https://example.com"
+            class="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-pure-white dark:bg-pure-black text-pure-black dark:text-pure-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+        <div class="mb-4">
+          <label for="username" class="block text-lg font-medium mb-2 text-gray-600 dark:text-gray-400">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="Enter username"
+            class="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-pure-white dark:bg-pure-black text-pure-black dark:text-pure-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+        <div class="mb-4">
+          <label for="file" class="block text-lg font-medium mb-2 text-gray-600 dark:text-gray-400">Upload File or Zip</label>
+          <input
+            type="file"
+            id="file"
+            name="file"
+            accept=".zip,.txt,.pdf"
+            class="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-pure-white dark:bg-pure-black text-pure-black dark:text-pure-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-pure-black dark:bg-pure-white text-pure-white dark:text-pure-black py-2 rounded-lg hover:bg-gray-700 dark:hover:bg-gray-300 transition"
+        >
+          Process Data
+        </button>
+      </form>
+
+      <!-- Progress Indicators -->
+      <div id="progress-container" class="mt-6 hidden">
+        <div class="mb-4">
+          <label class="block text-lg font-medium mb-2 text-gray-600 dark:text-gray-400">Reading Upload</label>
+          <div class="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-4">
+            <div
+              id="reading-progress"
+              class="bg-blue-500 h-4 rounded-full transition-all duration-300"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-lg font-medium mb-2 text-gray-600 dark:text-gray-400">Data Processing</label>
+          <div class="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-4">
+            <div
+              id="processing-progress"
+              class="bg-blue-500 h-4 rounded-full transition-all duration-300"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-lg font-medium mb-2 text-gray-600 dark:text-gray-400">Embedding</label>
+          <div class="w-full bg-gray-300 dark:bg-gray-600 rounded-full h-4">
+            <div
+              id="embedding-progress"
+              class="bg-blue-500 h-4 rounded-full transition-all duration-300"
+              style="width: 0%"
+            ></div>
+          </div>
+        </div>
+        <div id="status-message" class="text-center text-lg mt-4 text-gray-600 dark:text-gray-400"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  {% include 'footer.html' ignore missing %}
+
+  <script src="./static/js/dark_mode.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('upload-form');
+      const progressContainer = document.getElementById('progress-container');
+      const readingProgress = document.getElementById('reading-progress');
+      const processingProgress = document.getElementById('processing-progress');
+      const embeddingProgress = document.getElementById('embedding-progress');
+      const statusMessage = document.getElementById('status-message');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Show progress indicators
+        progressContainer.classList.remove('hidden');
+        statusMessage.textContent = 'Starting processing...';
+
+        // Prepare form data
+        const formData = new FormData(form);
+        try {
+          // Submit form to /upload endpoint
+          const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          const result = await response.json();
+
+          if (!result.task_id) {
+            throw new Error('No task ID returned');
+          }
+
+          const taskId = result.task_id;
+
+          // Poll for progress
+          const pollProgress = async () => {
+            const progressResponse = await fetch(`/progress/${taskId}`);
+            const progress = await progressResponse.json();
+
+            // Update progress bars
+            readingProgress.style.width = `${progress.reading}%`;
+            processingProgress.style.width = `${progress.processing}%`;
+            embeddingProgress.style.width = `${progress.embedding}%`;
+
+            // Hide completed stages
+            if (progress.reading === 100) {
+              readingProgress.parentElement.classList.add('hidden');
+            }
+            if (progress.processing === 100) {
+              processingProgress.parentElement.classList.add('hidden');
+            }
+            if (progress.embedding === 100) {
+              embeddingProgress.parentElement.classList.add('hidden');
+            }
+
+            // Update status message
+            if (progress.embedding === 100) {
+              statusMessage.textContent = 'Processing complete!';
+              return;
+            } else if (progress.processing === 100) {
+              statusMessage.textContent = 'Embedding data...';
+            } else if (progress.reading === 100) {
+              statusMessage.textContent = 'Processing data...';
+            } else {
+              statusMessage.textContent = 'Reading upload...';
+            }
+
+            // Continue polling if not complete
+            if (progress.embedding < 100) {
+              setTimeout(pollProgress, 1000); // Poll every 1 second
+            }
+          };
+
+          pollProgress();
+        } catch (error) {
+          console.error('Error:', error);
+          statusMessage.textContent = 'Error occurred during processing.';
+          progressContainer.classList.add('hidden');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "mandangpt"
+version = "0.1.0"
+description = "An AI powered discord bot with a dashboard"
+authors = ["blacksmithop <angstycoder101@gmail.com>"]
+readme = "Readme.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+
+[tool.poetry.group.fastapi.dependencies]
+uvicorn = "^0.34.2"
+fastapi = "^0.115.0"
+httpx = "^0.28.1"
+python-multipart = "^0.0.20"
+Jinja2 = "^3.1.6"
+itsdangerous = "^2.2.0"
+python-dotenv = "^1.1.0"
+
+[tool.poetry.group.bot.dependencies]
+aiohttp = "^3.11.0"
+aiosqlite = "^0.21.0"
+"discord.py" = "^2.5.0"
+pydantic = "^2.11.0"
+python-dotenv = "^1.1.0"
+langchain = "^0.3.25"
+langchain-core = "^0.3.59"
+langchain-ollama = "^0.3.2"
+ollama = "^0.4.8"
+langchain-text-splitters = "^0.3.8"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

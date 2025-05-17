@@ -2,10 +2,22 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Install Poetry
+RUN apt-get update && apt-get install -y curl && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    apt-get remove -y curl && apt-get autoremove -y
 
-RUN pip install --no-cache-dir fastapi uvicorn jinja2 itsdangerous httpx python-dotenv 
+# Add Poetry to PATH
+ENV PATH="/root/.local/bin:$PATH"
 
+# Copy Poetry configuration files
+COPY pyproject.toml poetry.lock* /app/
+
+# Install dependencies for fastapi group
+RUN poetry config virtualenvs.create false && \
+    poetry install --only main,fastapi --no-interaction --no-ansi
+
+# Copy the application and static files
 COPY app/ ./app/
 COPY static/ ./static/
 
