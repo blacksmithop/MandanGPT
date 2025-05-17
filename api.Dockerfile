@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir fastapi uvicorn jinja2 itsdangerous httpx python-dotenv 
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app/ ./app/
 COPY static/ ./static/
