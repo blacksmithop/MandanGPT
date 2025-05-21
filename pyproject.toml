@@ -33,6 +33,9 @@ langchain-ollama = "^0.3.2"
 ollama = "^0.4.8"
 langchain-text-splitters = "^0.3.8"
 langchain-milvus = "^0.1.10"
+duckduckgo-search = "^8.0.2"
+langchain-community = "^0.3.24"
+langgraph = "^0.4.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
