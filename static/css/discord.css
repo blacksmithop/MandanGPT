@@ -1,55 +1,137 @@
- .avatar-container {
-     position: relative;
-     display: inline-block;
- }
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
 
- .avatar {
-     width: 40px;
-     height: 40px;
-     border-radius: 50%;
-     cursor: pointer;
- }
+.avatar {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
 
- .user-card {
-     position: absolute;
-     top: 100%;
-     right: 0;
-     width: 200px;
-     border: 1px solid #ccc;
-     border-radius: 8px;
-     overflow: hidden;
-     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-     display: none;
-     z-index: 1001;
- }
+.avatar:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
 
- .user-card .avatar {
-     position: absolute;
-     top: 20px;
-     left: 10px;
-     width: 60px;
-     height: 60px;
-     border: 3px solid white;
- }
+.user-card {
+    position: absolute;
+    display: none;
+    z-index: 1001;
+    transform-origin: top right;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
 
- .avatar-container:hover .user-card {
-     display: block;
- }
+.user-card.show {
+    display: block;
+    animation: popIn 0.2s ease-out forwards;
+}
 
- .grid > div {
-  transition: all 0.3s ease;
+.dark .user-card {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Stats cards hover effect */
+.grid > div {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
 }
 
 .grid > div:hover {
-  transform: scale(1.05) translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  background-color: #e5e7eb; /* Light mode hover background */
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .dark .grid > div:hover {
-  background-color: #4b5563; /* Dark mode hover background */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-.grid > div:hover h3 {
-  color: #3b82f6; /* Blue for the number */
+.grid > div:hover .text-3xl {
+    color: #5865f2;
+}
+
+.grid > div::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, #5865f2, #7289da);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.grid > div:hover::after {
+    transform: scaleX(1);
+}
+
+/* Discord-style tooltip */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-5px);
+    background-color: black;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+/* Discord-style animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(88, 101, 242, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(88, 101, 242, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(88, 101, 242, 0);
+    }
+}
+
+.pulse {
+    animation: pulse 2s infinite;
 }
