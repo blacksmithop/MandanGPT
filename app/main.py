@@ -97,6 +97,19 @@ async def upload(request: Request):
         request=request, name="ingest.html", context={"user": user, "error": None}
     )
 
+@app.get("/commands")
+async def bot_commands(request: Request):
+    user = request.session.get("user")
+    return templates.TemplateResponse(
+        request=request, name="commands.html", context={"user": user, "error": None}
+    )
+
+@app.get("/features")
+async def bot_features(request: Request):
+    user = request.session.get("user")
+    return templates.TemplateResponse(
+        request=request, name="features.html", context={"user": user, "error": None}
+    )
 
 @app.get("/progress/{task_id}")
 async def get_progress(task_id: str):
