@@ -90,11 +90,11 @@ async def upload_data(
     return JSONResponse({"task_id": task_id})
 
 
-@app.get("/ingest")
+@app.get("/upload")
 async def upload(request: Request):
     user = request.session.get("user")
     return templates.TemplateResponse(
-        request=request, name="ingest.html", context={"user": user, "error": None}
+        request=request, name="upload.html", context={"user": user, "error": None}
     )
 
 @app.get("/commands")
