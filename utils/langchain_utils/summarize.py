@@ -26,15 +26,16 @@ async def summarize_text(
     try:
         summary_text, usage_metadata = await summarize_chain.ainvoke(
             {"context": text},
+            
             {
+                "callbacks": [langfuse_handler],
                 "configurable": {
                     "temperature": temperature,
                     "num_ctx": num_ctx,
                     "top_p": top_p,
                     "top_k": top_k,
                 }
-            },
-            config={"callbacks": [langfuse_handler]}
+            }
         )
         return summary_text, usage_metadata
     except Exception as e:
