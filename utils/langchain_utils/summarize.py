@@ -1,6 +1,8 @@
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from .runnable_parser import get_content_and_metadata
-from utils import ChainInputInvalid, langfuse_handler, llm_model
+from utils import ChainInputInvalid, langfuse_handler #, llm_model
+from utils.langchain_utils.llm_core import llm_model
+
 
 prompt = ChatPromptTemplate.from_messages(
     [

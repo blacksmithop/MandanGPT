@@ -1,8 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 from langchain_core.output_parsers import StrOutputParser
-from utils import llm_model, milvus_retriever
-
+from utils.langchain_utils.vectorstore_utils.milvus_init import milvus_retriever
+from utils.langchain_utils.llm_core import llm_model
 
 ### Retrieval Grader
 # Data model
