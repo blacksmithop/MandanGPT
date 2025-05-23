@@ -1,7 +1,6 @@
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
-from utils import llm, ChainInputInvalid
+from utils import llm, ChainInputInvalid, langfuse_handler
 from .runnable_parser import get_content_and_metadata
-
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -33,6 +32,7 @@ async def summarize_text(
                     "top_k": top_k,
                 }
             },
+            config={"callbacks": [langfuse_handler]}
         )
         return summary_text, usage_metadata
     except Exception as e:
