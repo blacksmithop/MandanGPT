@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.pydantic_v1 import BaseModel, Field
-from utils import llm, milvus_retriever
 from langchain_core.output_parsers import StrOutputParser
+from utils import llm_model, milvus_retriever
 
 
 ### Retrieval Grader
@@ -15,7 +15,7 @@ class GradeDocuments(BaseModel):
 
 
 # LLM with function call
-structured_llm_grader = llm.with_structured_output(GradeDocuments)
+structured_llm_grader = llm_model.with_structured_output(GradeDocuments)
 
 # Prompt
 system = """You are a grader assessing relevance of a retrieved document to a user question. \n 
@@ -49,7 +49,7 @@ def format_docs(docs):
 
 
 # Chain
-rag_chain = prompt | llm | StrOutputParser()
+rag_chain = prompt | llm_model | StrOutputParser()
 
 ### Question Re-writer
 system = """You a question re-writer that converts an input question to a better version that is optimized \n 
@@ -64,7 +64,7 @@ re_write_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-question_rewriter = re_write_prompt | llm | StrOutputParser()
+question_rewriter = re_write_prompt | llm_model | StrOutputParser()
 
 if __name__ == "__main__":
     question = "agent memory"
