@@ -15,6 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Save the new theme preference
         const isDarkMode = document.documentElement.classList.contains('dark');
         localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        
+        // Add animation to the toggle button
+        toggleButton.classList.add('animate-spin');
+        setTimeout(() => {
+            toggleButton.classList.remove('animate-spin');
+        }, 300);
     });
 
     // Scroll animation for fade-in effect
@@ -29,5 +35,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     fadeInElements.forEach(element => {
         observer.observe(element);
+    });
+    
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                // Update URL without page reload
+                history.pushState(null, null, targetId);
+            }
+        });
     });
 });

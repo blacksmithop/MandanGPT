@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  {% include 'head.html' ignore missing %}
+  <style>
+    .command-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .command-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .dark .command-card:hover {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+    .metadata-label {
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .module-nav {
+      position: sticky;
+      top: 5rem;
+    }
+  </style>
+</head>
+<body class="bg-discord-light dark:bg-discord-dark text-gray-800 dark:text-gray-100 min-h-screen flex flex-col items-center justify-between transition-colors duration-300">
+  <!-- Header Section -->
+  <header
+    class="fixed top-0 left-0 w-full h-16 bg-white/90 dark:bg-discord-darker/90 backdrop-blur-md flex items-center justify-between px-4 md:px-8 shadow-md z-50">
+    <a href="/" class="flex items-center space-x-2">
+      <img src="./static/images/discord_bot.png" alt="Bot Icon" class="w-8 h-8 rounded-full" />
+      <span class="font-bold text-xl hidden sm:block">MandanGPT</span>
+    </a>
+    
+    <nav class="hidden md:flex items-center space-x-6">
+      <a href="/" class="font-medium hover:text-discord-accent transition-colors">Home</a>
+      <a href="/ingest" class="font-medium hover:text-discord-accent transition-colors">Data Ingestion</a>
+      <a href="/commands" class="font-medium text-discord-accent">Commands</a>
+      <a href="/features" class="font-medium hover:text-discord-accent transition-colors">Features</a>
+    </nav>
+    
+    <div class="flex items-center space-x-2">
+      {% include 'darkmode.html' ignore missing %}
+      {% include 'oauth.html' ignore missing %}
+      
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-button" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-discord-darker md:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+  
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="fixed top-16 left-0 w-full bg-white dark:bg-discord-darker shadow-md z-40 hidden">
+    <div class="flex flex-col p-4 space-y-4">
+      <a href="/" class="font-medium hover:text-discord-accent transition-colors">Home</a>
+      <a href="/ingest" class="font-medium hover:text-discord-accent transition-colors">Data Ingestion</a>
+      <a href="/commands" class="font-medium text-discord-accent">Commands</a>
+      <a href="/features" class="font-medium hover:text-discord-accent transition-colors">Features</a>
+    </div>
+  </div>
+
+  <!-- Commands Section -->
+  <div class="flex flex-col items-center w-full px-4 pt-24 pb-16">
+    <div class="max-w-7xl w-full">
+      <div class="text-center mb-10 fade-in">
+        <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-discord-accent to-purple-500 bg-clip-text text-transparent">Bot Commands</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          Explore all available commands organized by modules. Each command includes detailed information about usage, parameters, and examples.
+        </p>
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="mb-8 fade-in">
+        <div class="bg-white dark:bg-discord-darker p-4 rounded-xl shadow-md">
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input 
+                  type="text" 
+                  id="command-search" 
+                  placeholder="Search commands..." 
+                  class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-discord-darker text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-discord-accent transition-colors"
+                >
+              </div>
+            </div>
+            <div class="flex-1 md:flex-initial">
+              <select 
+                id="category-filter" 
+                class="w-full md:w-48 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-discord-darker text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-discord-accent transition-colors"
+              >
+                <option value="all">All Categories</option>
+                <option value="utility">Utility</option>
+                <option value="moderation">Moderation</option>
+                <option value="fun">Fun</option>
+                <option value="ai">AI</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commands Content -->
+      <div class="flex flex-col lg:flex-row gap-8 fade-in">
+        <!-- Module Navigation Sidebar -->
+        <div class="lg:w-1/4">
+          <div class="bg-white dark:bg-discord-darker p-4 rounded-xl shadow-md module-nav">
+            <h2 class="text-xl font-bold mb-4 text-discord-accent">Modules</h2>
+            <ul class="space-y-2" id="module-nav">
+              <li>
+                <a href="#utility" class="block p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  Utility
+                </a>
+              </li>
+              <li>
+                <a href="#moderation" class="block p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  Moderation
+                </a>
+              </li>
+              <li>
+                <a href="#ai" class="block p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  AI & Machine Learning
+                </a>
+              </li>
+              <li>
+                <a href="#fun" class="block p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  Fun & Games
+                </a>
+              </li>
+              <li>
+                <a href="#admin" class="block p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  Administration
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Commands List -->
+        <div class="lg:w-3/4">
+          <!-- Utility Module -->
+          <section id="utility" class="mb-12">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold">Utility Commands</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/help</h3>
+                  <span class="metadata-label bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">Utility</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Displays a list of available commands or detailed information about a specific command.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">h, commands</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">[command_name]</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">3 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/help</div>
+                    <div>/help ask</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/ping</h3>
+                  <span class="metadata-label bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300">Utility</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Checks the bot's response time and API latency.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">latency</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">None</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">5 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/ping</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- AI Module -->
+          <section id="ai" class="mb-12">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold">AI & Machine Learning Commands</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/ask</h3>
+                  <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">AI</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Ask the AI a question and get a response based on its knowledge.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">question, q</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">&lt;question&gt;</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">10 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/ask What is the capital of France?</div>
+                    <div>/ask How does photosynthesis work?</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/ingest</h3>
+                  <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">AI</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Process and ingest data from a URL, file, or text for the AI to learn from.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">learn, process</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">&lt;url&gt; or &lt;file_attachment&gt;</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">60 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/ingest https://example.com/article.html</div>
+                    <div>/ingest [attached PDF file]</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Moderation Module -->
+          <section id="moderation" class="mb-12">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold">Moderation Commands</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/ban</h3>
+                  <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Moderation</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Bans a user from the server with an optional reason.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">banish</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">&lt;user&gt; [reason]</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">5 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/ban @user</div>
+                    <div>/ban @user Spamming in chat</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/purge</h3>
+                  <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Moderation</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Deletes a specified number of messages from the current channel.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">clear, prune</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">&lt;amount&gt; [user]</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">10 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/purge 10</div>
+                    <div>/purge 20 @user</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Fun Module -->
+          <section id="fun" class="mb-12">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold">Fun & Games Commands</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/8ball</h3>
+                  <span class="metadata-label bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300">Fun</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Ask the magic 8-ball a question and receive a mystical answer.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">8b, magic8</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">&lt;question&gt;</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">3 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/8ball Will I win the lottery?</div>
+                    <div>/8ball Is today my lucky day?</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/meme</h3>
+                  <span class="metadata-label bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300">Fun</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Fetches a random meme from popular subreddits.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">reddit, funny</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">[subreddit]</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">5 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/meme</div>
+                    <div>/meme programmerhumor</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Admin Module -->
+          <section id="admin" class="mb-12">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center mr-3">
+                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+              </div>
+              <h2 class="text-2xl font-bold">Administration Commands</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/config</h3>
+                  <span class="metadata-label bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Admin</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Configure bot settings for your server.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">settings, setup</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">&lt;setting&gt; &lt;value&gt;</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">10 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/config prefix !</div>
+                    <div>/config welcome-channel #welcome</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/stats</h3>
+                  <span class="metadata-label bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Admin</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">Displays bot statistics and system information.</p>
+                
+                <div class="space-y-2">
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">info, status</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">None</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">30 seconds</span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/stats</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  {% include 'footer.html' ignore missing %}
+
+  <script src="./static/js/dark_mode.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+      
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', (event) => {
+        if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
+          mobileMenu.classList.add('hidden');
+        }
+      });
+      
+      // Command search functionality
+      const searchInput = document.getElementById('command-search');
+      const categoryFilter = document.getElementById('category-filter');
+      const commandCards = document.querySelectorAll('.command-card');
+      
+      function filterCommands() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const category = categoryFilter.value;
+        
+        commandCards.forEach(card => {
+          const commandName = card.querySelector('h3').textContent.toLowerCase();
+          const commandDescription = card.querySelector('p').textContent.toLowerCase();
+          const commandCategory = card.querySelector('.metadata-label').textContent.toLowerCase();
+          
+          const matchesSearch = commandName.includes(searchTerm) || commandDescription.includes(searchTerm);
+          const matchesCategory = category === 'all' || commandCategory === category;
+          
+          if (matchesSearch && matchesCategory) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        
+        // Show/hide section headers based on visible cards
+        document.querySelectorAll('section').forEach(section => {
+          const visibleCards = section.querySelectorAll('.command-card[style="display: block"]').length;
+          if (visibleCards === 0) {
+            section.style.display = 'none';
+          } else {
+            section.style.display = 'block';
+          }
+        });
+      }
+      
+      searchInput.addEventListener('input', filterCommands);
+      categoryFilter.addEventListener('change', filterCommands);
+      
+      // Smooth scrolling for module navigation
+      document.querySelectorAll('#module-nav a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 100,
+              behavior: 'smooth'
+            });
+            
+            // Update active state
+            document.querySelectorAll('#module-nav a').forEach(a => {
+              a.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-discord-accent');
+            });
+            this.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-discord-accent');
+          }
+        });
+      });
+      
+      // Highlight active section on scroll
+      window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY;
+        
+        document.querySelectorAll('section').forEach(section => {
+          const sectionTop = section.offsetTop - 120;
+          const sectionBottom = sectionTop + section.offsetHeight;
+          
+          if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            const id = section.getAttribute('id');
+            document.querySelectorAll('#module-nav a').forEach(a => {
+              a.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-discord-accent');
+            });
+            document.querySelector(`#module-nav a[href="#${id}"]`).classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-discord-accent');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
