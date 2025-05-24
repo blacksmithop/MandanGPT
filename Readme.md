@@ -45,3 +45,4 @@ python bot.py
 
 - When passsing parameters in summary command to LLM, the max-tokens parameter is not followed
 - Langfuse does not show usage traces
+- Handle missing permission errors (eg: Cannot DM)
