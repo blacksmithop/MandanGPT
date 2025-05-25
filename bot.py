@@ -128,7 +128,7 @@ class DiscordBot(commands.Bot):
         help_command_handler.walk_cogs_and_generate_help_text(cogs=self.cogs)
         self.help_command_handler = help_command_handler
 
-    @tasks.loop(minutes=5.0)
+    @tasks.loop(minutes=30.0)
     async def status_task(self) -> None:
         """
         Update the bot activity.
