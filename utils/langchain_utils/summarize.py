@@ -25,8 +25,8 @@ async def summarize_text(
 ):
     try:
         summary_text, usage_metadata = await summarize_chain.ainvoke(
-            {"context": text},
-            
+            input={"context": text},
+            config=
             {
                 "callbacks": [langfuse_handler],
                 "configurable": {
