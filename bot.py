@@ -6,6 +6,7 @@ import random
 # import aiosqlite
 import discord
 from discord.ext import commands, tasks
+from discord import app_commands
 from discord.ext.commands import Context
 from discord.errors import LoginFailure
 from dotenv import load_dotenv
@@ -245,6 +246,14 @@ class DiscordBot(commands.Bot):
                 color=0xE02B2B,
             )
             await context.send(embed=embed)
+        else:
+            raise error
+        
+    async def on_tree_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            return await interaction.response.send_message(f"Command is currently on cooldown! Try again in **{error.retry_after:.2f}** seconds!")
+        elif isinstance(error, app_commands.MissingPermissions):
+            return await interaction.response.send_message(f"You're missing permissions to use that")
         else:
             raise error
 
