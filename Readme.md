@@ -35,15 +35,15 @@ python bot.py
     - Indexing methods based on document/source type
 - Langgraph CRAG (corrective RAG)
 - Deploy Milvus ✅
-- LangFuse 🔜
+- Deploy LangFuse ✅
 - MongoDB/Redis - Server stats (frequent update task)
   - Website stats
-- Export Help Command JSON - Return via API - Render / Manually add
-- Dynamic website content
+- Export Help Command JSON - Return via API - Render / Manually add ✅
+- Dynamic website content ✅
 
 ## Bugs
 
-- When passsing parameters in summary command to LLM, the max-tokens parameter is not followed
-- Langfuse does not show usage traces
+- When passsing parameters in summary command to LLM, the max-tokens parameter is not followed ✅
+- Langfuse does not show usage traces ✅
 - Handle missing permission errors (eg: Cannot DM)
 - Better Discord Status
