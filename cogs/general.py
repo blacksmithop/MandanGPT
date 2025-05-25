@@ -3,7 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import Context
-from utils import FeedbackForm, generate_man_page, HelpCommandArgParser
+from utils import FeedbackForm, generate_man_page, HelpCommandArgParser, InviteSupportView
 from typing import Optional
 
 
@@ -78,15 +78,12 @@ class General(commands.Cog, name="general"):
 
         :param context: The hybrid command context.
         """
-        embed = discord.Embed(
-            description=f"Invite me by clicking [here]({self.bot.config['invite_link']}).",
-            color=0xD75BF4,
-        )
+        invite_view = InviteSupportView()
         try:
-            await context.author.send(embed=embed)
+            await context.author.send(view=invite_view)
             await context.send("I sent you a private message!")
         except discord.Forbidden:
-            await context.send(embed=embed)
+            await context.send(embed=invite_view)
 
     @app_commands.command(
         name="feedback", description="Submit a feedback for the owners of the bot"
