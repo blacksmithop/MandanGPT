@@ -4,34 +4,30 @@
   <div class="avatar-container">
     <img
       id="user-avatar"
-      class="avatar border-pure-black dark:border-gray-500"
+      class="avatar w-8 h-8 rounded-full border-2 border-white dark:border-discord-darker shadow-md cursor-pointer"
       alt="User Avatar"
       src="https://cdn.discordapp.com/avatars/{{ user.id }}/{{ user.avatar }}.png"
     />
-    <div class="user-card bg-pure-white dark:bg-gray-dark">
-      <div
-        class="h-14"
-        style="background: {{ user.banner_color|default('#8033cd') }}"
-      ></div>
-      <img
-        id="user-avatar-card"
-        class="avatar"
-        alt="User Avatar"
-        src="https://cdn.discordapp.com/avatars/{{ user.id }}/{{ user.avatar }}.png"
-      />
-      <div
-        class="mt-[30px] px-2.5 pb-2.5 text-center font-[Helvetica,sans-serif]"
-      >
-        <div class="text-xl font-bold">{{ user.username }}</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {{ user.global_name|default(user.username) }}
+    <div class="user-card w-48 right-0 top-full mt-2 rounded-md overflow-hidden">
+      <!-- User profile popup -->
+      <div class="bg-white dark:bg-discord-darker shadow-lg rounded-md overflow-hidden">
+        <!-- Banner color -->
+        <div class="h-12" style="background: {{ user.banner_color|default('#5865f2') }}"></div>
+        
+        <!-- User info section -->
+        <div class="p-4">
+          <div class="font-bold text-lg text-gray-800 dark:text-white">{{ user.username }}</div>
+          <div class="text-sm text-gray-500 dark:text-gray-400">{{ user.global_name|default(user.username) }}</div>
+          
+          <div class="border-t border-gray-200 dark:border-gray-700 my-3"></div>
+          
+          <a
+            href="/logout"
+            class="block w-full py-2 mt-2 bg-discord-accent hover:bg-discord-accent-hover text-white text-center rounded-md transition-colors duration-200"
+          >
+            Logout
+          </a>
         </div>
-        <a
-          href="/logout"
-          class="mt-2 inline-block px-4 py-1.5 bg-pure-black dark:bg-pure-white text-pure-white dark:text-pure-black rounded-md hover:bg-gray-700 dark:hover:bg-gray-300 transition"
-        >
-          Logout
-        </a>
       </div>
     </div>
   </div>
@@ -40,10 +36,11 @@
   <a
     id="discord-login"
     href="/authenticate"
-    class="flex items-center rounded-md transition"
+    class="flex items-center p-2 rounded-md hover:bg-gray-200 dark:hover:bg-discord-darker transition-colors"
+    data-tooltip="Login with Discord"
   >
     <svg
-      class="w-5 h-5 mr-2"
+      class="w-5 h-5 text-discord-accent"
       fill="currentColor"
       viewBox="5 8 22 16"
       xmlns="http://www.w3.org/2000/svg"
@@ -55,3 +52,35 @@
   </a>
   {% endif %}
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const avatarContainer = document.querySelector('.avatar-container');
+    const userAvatar = document.getElementById('user-avatar');
+    const userCard = document.querySelector('.user-card');
+    
+    if (avatarContainer && userAvatar && userCard) {
+      let isCardVisible = false;
+      
+      // Toggle dropdown on click instead of hover
+      userAvatar.addEventListener('click', function(e) {
+        e.stopPropagation();
+        isCardVisible = !isCardVisible;
+        
+        if (isCardVisible) {
+          userCard.classList.add('show');
+        } else {
+          userCard.classList.remove('show');
+        }
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (isCardVisible && !avatarContainer.contains(e.target)) {
+          userCard.classList.remove('show');
+          isCardVisible = false;
+        }
+      });
+    }
+  });
+</script>

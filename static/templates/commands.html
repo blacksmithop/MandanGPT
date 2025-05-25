@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  {% include 'head.html' ignore missing %}
+  <style>
+    .command-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .command-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .dark .command-card:hover {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+    }
+    .metadata-label {
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .module-nav {
+      position: sticky;
+      top: 5rem;
+    }
+    .fade-in {
+      animation: fadeIn 0.6s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-discord-light dark:bg-discord-dark text-gray-800 dark:text-gray-100 min-h-screen flex flex-col items-center justify-between transition-colors duration-300">
+  <!-- Header Section -->
+  <header
+    class="fixed top-0 left-0 w-full h-16 bg-white/90 dark:bg-discord-darker/90 backdrop-blur-md flex items-center justify-between px-4 md:px-8 shadow-md z-50">
+    <a href="/" class="flex items-center space-x-2">
+      <img src="./static/images/discord_bot.png" alt="Bot Icon" class="w-8 h-8 rounded-full" />
+      <span class="font-bold text-xl hidden sm:block">MandanGPT</span>
+    </a>
+    
+    <nav class="hidden md:flex items-center space-x-6">
+      <a href="/" class="font-medium hover:text-discord-accent transition-colors">Home</a>
+      <a href="/ingest" class="font-medium hover:text-discord-accent transition-colors">Data Ingestion</a>
+      <a href="/commands" class="font-medium text-discord-accent">Commands</a>
+      <a href="/features" class="font-medium hover:text-discord-accent transition-colors">Features</a>
+    </nav>
+    
+    <div class="flex items-center space-x-2">
+      {% include 'darkmode.html' ignore missing %}
+      {% include 'oauth.html' ignore missing %}
+      
+      <!-- Mobile menu button -->
+      <button id="mobile-menu-button" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-discord-darker md:hidden">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+  
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="fixed top-16 left-0 w-full bg-white dark:bg-discord-darker shadow-md z-40 hidden">
+    <div class="flex flex-col p-4 space-y-4">
+      <a href="/" class="font-medium hover:text-discord-accent transition-colors">Home</a>
+      <a href="/ingest" class="font-medium hover:text-discord-accent transition-colors">Data Ingestion</a>
+      <a href="/commands" class="font-medium text-discord-accent">Commands</a>
+      <a href="/features" class="font-medium hover:text-discord-accent transition-colors">Features</a>
+    </div>
+  </div>
+
+  <!-- Commands Section -->
+  <div class="flex flex-col items-center w-full px-4 pt-24 pb-16">
+    <div class="max-w-7xl w-full">
+      <div class="text-center mb-10 fade-in">
+        <h1 class="text-4xl font-bold mb-4 bg-gradient-to-r from-discord-accent to-purple-500 bg-clip-text text-transparent">Bot Commands</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          Explore all available commands organized by modules. Each command includes detailed information about usage, parameters, and examples.
+        </p>
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="mb-8 fade-in">
+        <div class="bg-white dark:bg-discord-darker p-4 rounded-xl shadow-md">
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input 
+                  type="text" 
+                  id="command-search" 
+                  placeholder="Search commands..." 
+                  class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-discord-darker text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-discord-accent transition-colors"
+                >
+              </div>
+            </div>
+            <div class="flex-1 md:flex-initial">
+              <select 
+                id="category-filter" 
+                class="w-full md:w-48 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-discord-darker text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-discord-accent transition-colors"
+              >
+                <option value="all">All Categories</option>
+                {% for module_name in commands.keys() %}
+                <option value="{{ module_name|lower|replace(' ', '-')|replace('&', 'and') }}">{{ module_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commands Content -->
+      <div class="flex flex-col lg:flex-row gap-8 fade-in">
+        <!-- Module Navigation Sidebar -->
+        <div class="lg:w-1/4">
+          <div class="bg-white dark:bg-discord-darker p-4 rounded-xl shadow-md module-nav">
+            <h2 class="text-xl font-bold mb-4 text-discord-accent">Modules</h2>
+            <ul class="space-y-2" id="module-nav">
+              {% for module_name in commands.keys() %}
+              <li>
+                <a href="#{{ module_name|lower|replace(' ', '-')|replace('&', 'and') }}" class="block p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  {{ module_name }}
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <!-- Commands List -->
+        <div class="lg:w-3/4">
+          {% for module_name, module_data in commands.items() %}
+          <!-- {{ module_name }} Module -->
+          <section id="{{ module_name|lower|replace(' ', '-')|replace('&', 'and') }}" class="mb-12" data-module="{{ module_name|lower|replace(' ', '-')|replace('&', 'and') }}">
+            <div class="flex items-center mb-6">
+              <div class="w-10 h-10 {% if module_name == 'AI & ML' %}bg-purple-100 dark:bg-purple-900/30{% elif module_name == 'General' %}bg-blue-100 dark:bg-blue-900/30{% elif module_name == 'Admin' %}bg-gray-100 dark:bg-gray-700{% else %}bg-green-100 dark:bg-green-900/30{% endif %} rounded-lg flex items-center justify-center mr-3">
+                {% if module_name == 'AI & ML' %}
+                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+                {% elif module_name == 'General' %}
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                {% elif module_name == 'Admin' %}
+                <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+                {% else %}
+                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                {% endif %}
+              </div>
+              <h2 class="text-2xl font-bold">{{ module_name }} Commands</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {% for command in module_data.commands %}
+              <!-- Command Card -->
+              <div class="command-card bg-white dark:bg-discord-darker p-5 rounded-xl shadow-md" data-category="{{ module_name|lower|replace(' ', '-')|replace('&', 'and') }}" data-command-name="{{ command.name }}" data-command-description="{{ command.description }}">
+                <div class="flex justify-between items-start mb-3">
+                  <h3 class="text-xl font-bold">/{{ command.name }}</h3>
+                  <span class="metadata-label {% if module_name == 'AI & ML' %}bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300{% elif module_name == 'General' %}bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300{% elif module_name == 'Admin' %}bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300{% else %}bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300{% endif %}">{{ module_name }}</span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">{{ command.description }}</p>
+                
+                <div class="space-y-2">
+                  {% if command.aliases and command.aliases|length > 1 %}
+                  <div>
+                    <span class="metadata-label bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300">Aliases</span>
+                    <span class="text-gray-600 dark:text-gray-400">{{ command.aliases[1:] | join(', ') if command.aliases|length > 1 else 'None' }}</span>
+                  </div>
+                  {% endif %}
+                  <div>
+                    <span class="metadata-label bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300">Parameters</span>
+                    <span class="text-gray-600 dark:text-gray-400">{{ command.parameters if command.parameters != 'None' else 'None' }}</span>
+                  </div>
+                  <div>
+                    <span class="metadata-label bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300">Cooldown</span>
+                    <span class="text-gray-600 dark:text-gray-400">
+                      {% set cooldown_parts = [] %}
+                      {% if command.cooldown.h > 0 %}
+                        {% set _ = cooldown_parts.append(command.cooldown.h ~ ' hour' ~ ('s' if command.cooldown.h != 1 else '')) %}
+                      {% endif %}
+                      {% if command.cooldown.m > 0 %}
+                        {% set _ = cooldown_parts.append(command.cooldown.m ~ ' minute' ~ ('s' if command.cooldown.m != 1 else '')) %}
+                      {% endif %}
+                      {% if command.cooldown.s > 0 %}
+                        {% set _ = cooldown_parts.append(command.cooldown.s ~ ' second' ~ ('s' if command.cooldown.s != 1 else '')) %}
+                      {% endif %}
+                      {{ cooldown_parts | join(', ') if cooldown_parts else 'No cooldown' }}
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h4 class="font-semibold mb-2">Examples:</h4>
+                  <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-md font-mono text-sm">
+                    <div>/{{ command.name }}{% if command.parameters and command.parameters != 'None' %} {{ command.parameters }}{% endif %}</div>
+                    {% if command.aliases and command.aliases|length > 1 %}
+                    <div>/{{ command.aliases[1] }}{% if command.parameters and command.parameters != 'None' %} {{ command.parameters }}{% endif %}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </section>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Section -->
+  {% include 'footer.html' ignore missing %}
+
+  <script src="./static/js/dark_mode.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (event) => {
+          if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+          }
+        });
+      }
+      
+      // Command search functionality
+      const searchInput = document.getElementById('command-search');
+      const categoryFilter = document.getElementById('category-filter');
+      const commandCards = document.querySelectorAll('.command-card');
+      const sections = document.querySelectorAll('section[data-module]');
+      
+      function filterCommands() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const category = categoryFilter.value;
+        
+        let hasVisibleCommands = false;
+        
+        commandCards.forEach(card => {
+          const commandName = card.getAttribute('data-command-name').toLowerCase();
+          const commandDescription = card.getAttribute('data-command-description').toLowerCase();
+          const commandCategory = card.getAttribute('data-category');
+          
+          const matchesSearch = commandName.includes(searchTerm) || commandDescription.includes(searchTerm);
+          const matchesCategory = category === 'all' || commandCategory === category;
+          
+          if (matchesSearch && matchesCategory) {
+            card.style.display = 'block';
+            hasVisibleCommands = true;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        
+        // Show/hide section headers based on visible cards
+        sections.forEach(section => {
+          const visibleCards = section.querySelectorAll('.command-card[style="display: block"], .command-card:not([style*="display: none"])').length;
+          const sectionCategory = section.getAttribute('data-module');
+          const matchesCategoryFilter = category === 'all' || sectionCategory === category;
+          
+          if (visibleCards === 0 || !matchesCategoryFilter) {
+            section.style.display = 'none';
+          } else {
+            section.style.display = 'block';
+          }
+        });
+        
+        // Show "no results" message if needed
+        showNoResultsMessage(!hasVisibleCommands);
+      }
+      
+      function showNoResultsMessage(show) {
+        let noResultsDiv = document.getElementById('no-results-message');
+        
+        if (show && !noResultsDiv) {
+          noResultsDiv = document.createElement('div');
+          noResultsDiv.id = 'no-results-message';
+          noResultsDiv.className = 'text-center py-12';
+          noResultsDiv.innerHTML = `
+            <div class="text-gray-400 dark:text-gray-500">
+              <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+              <h3 class="text-xl font-semibold mb-2">No commands found</h3>
+              <p>Try adjusting your search terms or filters.</p>
+            </div>
+          `;
+          document.querySelector('.lg\\:w-3\\/4').appendChild(noResultsDiv);
+        } else if (!show && noResultsDiv) {
+          noResultsDiv.remove();
+        }
+      }
+      
+      if (searchInput && categoryFilter) {
+        searchInput.addEventListener('input', filterCommands);
+        categoryFilter.addEventListener('change', filterCommands);
+      }
+      
+      // Smooth scrolling for module navigation
+      document.querySelectorAll('#module-nav a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const targetId = this.getAttribute('href');
+          const targetElement = document.querySelector(targetId);
+          
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 100,
+              behavior: 'smooth'
+            });
+            
+            // Update active state
+            document.querySelectorAll('#module-nav a').forEach(a => {
+              a.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-discord-accent');
+            });
+            this.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-discord-accent');
+          }
+        });
+      });
+      
+      // Highlight active section on scroll
+      window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY;
+        
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 120;
+          const sectionBottom = sectionTop + section.offsetHeight;
+          
+          if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            const id = section.getAttribute('id');
+            document.querySelectorAll('#module-nav a').forEach(a => {
+              a.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-discord-accent');
+            });
+            const activeLink = document.querySelector(`#module-nav a[href="#${id}"]`);
+            if (activeLink) {
+              activeLink.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-discord-accent');
+            }
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

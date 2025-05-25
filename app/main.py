@@ -12,6 +12,7 @@ from secrets import token_urlsafe
 from typing import Optional
 from uuid import uuid4
 from asyncio import sleep
+from json import load
 
 
 load_dotenv()
@@ -42,6 +43,9 @@ async def index(request: Request):
 # In-memory storage for task progress (replace with Redis or database in production)
 tasks = {}
 
+# Command information
+with open("./static/data/commands.json", "r") as f:
+    module_commands_dict = load(f)
 
 # Simulated processing function for the three stages
 async def process_data(
@@ -90,13 +94,26 @@ async def upload_data(
     return JSONResponse({"task_id": task_id})
 
 
-@app.get("/ingest")
+@app.get("/upload")
 async def upload(request: Request):
     user = request.session.get("user")
     return templates.TemplateResponse(
-        request=request, name="ingest.html", context={"user": user, "error": None}
+        request=request, name="upload.html", context={"user": user, "error": None}
     )
 
+@app.get("/commands")
+async def bot_commands(request: Request):
+    user = request.session.get("user")
+    return templates.TemplateResponse(
+        request=request, name="commands.html", context={"user": user, "error": None, "commands": module_commands_dict}
+    )
+
+@app.get("/features")
+async def bot_features(request: Request):
+    user = request.session.get("user")
+    return templates.TemplateResponse(
+        request=request, name="features.html", context={"user": user, "error": None}
+    )
 
 @app.get("/progress/{task_id}")
 async def get_progress(task_id: str):

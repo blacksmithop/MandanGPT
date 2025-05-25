@@ -1,8 +1,7 @@
 from langchain_milvus import Milvus
 from os import getenv
-from utils import embeddings
-from milvus_operations import find_or_create_database
-
+from utils.langchain_utils.llm_core import embeddings
+from utils.langchain_utils.vectorstore_utils import find_or_create_database
 
 MILVUS_HOST, MILVUS_PORT = getenv("MILVUS_HOST"), getenv("MILVUS_PORT")
 MILVUS_URI = f"http://{MILVUS_HOST}:{MILVUS_PORT}"

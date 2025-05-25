@@ -1,0 +1,173 @@
+{
+    "AI & ML": {
+        "icon": "fa-solid fa-robot",
+        "commands": [
+            {
+                "name": "summarize",
+                "description": "Summarize input text. Customizable length and model parameters",
+                "aliases": [
+                    "summarize"
+                ],
+                "parameters": "None",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            }
+        ]
+    },
+    "General": {
+        "icon": "fa-solid fa-gear",
+        "commands": [
+            {
+                "name": "help",
+                "description": "Detailed information on modules and commands",
+                "aliases": [
+                    "help"
+                ],
+                "parameters": "[module] [command]",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "about",
+                "description": "Helpful information about the bot",
+                "aliases": [
+                    "about"
+                ],
+                "parameters": "None",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "ping",
+                "description": "Check the bot latency",
+                "aliases": [
+                    "ping"
+                ],
+                "parameters": "None",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "invite",
+                "description": "Get link to invite bot",
+                "aliases": [
+                    "invite"
+                ],
+                "parameters": "None",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "feedback",
+                "description": "Send feedback to the bot owner/developers",
+                "aliases": [
+                    "feedback"
+                ],
+                "parameters": "None",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            }
+        ]
+    },
+    "Admin": {
+        "icon": "fa-solid fa-lock",
+        "commands": [
+            {
+                "name": "sync",
+                "description": "Synchonizes the slash commands",
+                "aliases": [
+                    "sync"
+                ],
+                "parameters": "[scope] {guild|global}",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "unsync",
+                "description": "Unsynchonizes the slash commands",
+                "aliases": [
+                    "unsync"
+                ],
+                "parameters": "[scope] {guild|global}",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "load",
+                "description": "Load the given cog",
+                "aliases": [
+                    "load"
+                ],
+                "parameters": "[cog name]",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "unload",
+                "description": "Unloads the given cog",
+                "aliases": [
+                    "unload"
+                ],
+                "parameters": "[cog name]",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "reload",
+                "description": "Reload the given cog",
+                "aliases": [
+                    "reload"
+                ],
+                "parameters": "[cog name]",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            },
+            {
+                "name": "shutdown",
+                "description": "Shutdown the bot",
+                "aliases": [
+                    "shutdown"
+                ],
+                "parameters": "None",
+                "cooldown": {
+                    "s": 0,
+                    "m": 0,
+                    "h": 0
+                }
+            }
+        ]
+    }
+}

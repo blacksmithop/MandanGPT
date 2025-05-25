@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from utils import discord_bot_token
-from database import DatabaseManager
+# from database import DatabaseManager
 from utils import bot_config as config, HelpCommand, get_new_activity
 
 
