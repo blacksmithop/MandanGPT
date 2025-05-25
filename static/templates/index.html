@@ -40,8 +40,8 @@
   <div id="mobile-menu" class="fixed top-16 left-0 w-full bg-white dark:bg-discord-darker shadow-md z-40 hidden">
     <div class="flex flex-col p-4 space-y-4">
       <a href="/" class="font-medium hover:text-discord-accent transition-colors">Home</a>
-      <a href="#commands" class="font-medium hover:text-discord-accent transition-colors">Commands</a>
-      <a href="#features" class="font-medium hover:text-discord-accent transition-colors">Features</a>
+      <a href="/commands" class="font-medium hover:text-discord-accent transition-colors">Commands</a>
+      <a href="/features" class="font-medium hover:text-discord-accent transition-colors">Features</a>
       <a href="/upload" class="font-medium hover:text-discord-accent transition-colors">Knowledge Base</a>
     </div>
   </div>
@@ -99,80 +99,6 @@
         <div class="bg-white dark:bg-discord-darker p-6 rounded-xl shadow-md text-center">
           <div class="text-3xl font-bold text-discord-accent mb-2">1000</div>
           <p class="text-gray-600 dark:text-gray-400">Invocations</p>
-        </div>
-      </div>
-
-      <!-- Features Section -->
-      <div id="features" class="mb-16 fade-in">
-        <h2 class="text-3xl font-bold mb-8 text-center">Features</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white dark:bg-discord-darker p-6 rounded-xl shadow-md">
-            <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4">
-              <svg class="w-6 h-6 text-discord-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-2">AI Conversations</h3>
-            <p class="text-gray-600 dark:text-gray-400">Engage in natural conversations with an advanced AI that understands context and provides helpful responses.</p>
-          </div>
-          <div class="bg-white dark:bg-discord-darker p-6 rounded-xl shadow-md">
-            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
-              <svg class="w-6 h-6 text-discord-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-2">Data Processing</h3>
-            <p class="text-gray-600 dark:text-gray-400">Upload and process various data sources including URLs, usernames, and files for enhanced AI interactions.</p>
-          </div>
-          <div class="bg-white dark:bg-discord-darker p-6 rounded-xl shadow-md">
-            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
-              <svg class="w-6 h-6 text-discord-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold mb-2">Fast Response</h3>
-            <p class="text-gray-600 dark:text-gray-400">Get quick and accurate responses with minimal latency, powered by advanced AI technology.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Commands Section -->
-      <div id="commands" class="mb-16 fade-in">
-        <h2 class="text-3xl font-bold mb-8 text-center">Commands</h2>
-        <div class="bg-white dark:bg-discord-darker rounded-xl shadow-md overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead class="bg-gray-50 dark:bg-discord-darker">
-                <tr>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Command</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Description</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Example</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white dark:bg-discord-darker divide-y divide-gray-200 dark:divide-gray-700">
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-discord-accent">/help</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">Display all available commands</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">/help</td>
-                </tr>
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-discord-accent">/ask</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">Ask the AI a question</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">/ask What is the capital of France?</td>
-                </tr>
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-discord-accent">/ingest</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">Process data from a URL or file</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">/ingest https://example.com</td>
-                </tr>
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-discord-accent">/stats</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">Show bot statistics</td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">/stats</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </div>

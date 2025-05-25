@@ -15,7 +15,7 @@ def get_ollama_models():
         print("Please install the langchain-ollama package")
         exit(0)
 
-    llm = ChatOllama(
+    llm_model = ChatOllama(
         base_url=llm_params.url,
         model=llm_params.chat_model,
         temperature=0,
@@ -28,7 +28,7 @@ def get_ollama_models():
         )
     else:
         embeddings = None
-    return llm, embeddings
+    return llm_model, embeddings
 
 
 def get_gemini_models():
@@ -41,7 +41,7 @@ def get_gemini_models():
         print("Please install the langchain-google-genai package")
         exit(0)
 
-    llm = ChatGoogleGenerativeAI(
+    llm_model = ChatGoogleGenerativeAI(
         model=llm_params.chat_model,
         api_key=llm_params.api_key,
         temperature=0,
@@ -53,7 +53,7 @@ def get_gemini_models():
         embeddings = GoogleGenerativeAIEmbeddings(model=llm_params.embeddings_model)
     else:
         embeddings = None
-    return llm, embeddings
+    return llm_model, embeddings
 
 
 def get_openai_models():
@@ -63,7 +63,7 @@ def get_openai_models():
         print("Please install the langchain-openai package")
         exit(0)
 
-    llm = AzureChatOpenAI(
+    llm_model = AzureChatOpenAI(
         deployment_name=llm_params.chat_model,
         temperature=0,
         max_tokens=500,
@@ -74,7 +74,7 @@ def get_openai_models():
         )
     else:
         embeddings = None
-    return llm, embeddings
+    return llm_model, embeddings
 
 
 def get_transformer_models():
@@ -87,7 +87,7 @@ def get_transformer_models():
         print("Please install the langchain-community package")
         exit(0)
 
-    llm = VLLM(
+    llm_model = VLLM(
         model=llm_params.chat_model,
         trust_remote_code=True,  # mandatory for hf models
         max_new_tokens=128,
@@ -97,7 +97,7 @@ def get_transformer_models():
     )
     if llm_params.embeddings_model:
         embeddings = Model2vecEmbeddings(llm_params.embeddings_model)
-    return llm, embeddings
+    return llm_model, embeddings
 
 
 match llm_provider:
@@ -110,4 +110,4 @@ match llm_provider:
     case "transformers":
         func = get_transformer_models
 
-llm, embeddings = func()
+llm_model, embeddings = func()

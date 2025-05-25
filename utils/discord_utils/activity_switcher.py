@@ -7,9 +7,9 @@ async def get_new_activity():
     quote = quote_data.data.quote
 
     new_activity = discord.Activity(
-        type=discord.ActivityType.listening,
-        name="🤔",
-        state=quote,
+        type=discord.ActivityType.playing,
+        name=quote,
+        # state=quote,
         # assets={
         #     "large_image": "image3",
         #     "large_text": "Galaxy View",

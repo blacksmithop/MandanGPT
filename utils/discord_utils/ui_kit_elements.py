@@ -1,5 +1,5 @@
-from discord import Embed, Interaction, SelectOption, TextStyle
-from discord.ui import Modal, Select, TextInput, View
+from discord import ButtonStyle, Embed, Interaction, SelectOption, TextStyle
+from discord.ui import Button, Modal, Select, TextInput, View
 from utils import summarize_text
 
 # Constants for default values
@@ -194,4 +194,19 @@ class SummaryTypeView(View):
                 top_p=top_p,
                 num_ctx=num_ctx,
             )
+        )
+
+
+class InviteSupportView(View):
+    def __init__(self):
+        super().__init__()
+        self.add_item(
+            Button(
+                label="Invite Bot",
+                style=ButtonStyle.link,
+                url="https://discord.com/oauth2/authorize?client_id=1233258905157767168&scope=bot&permissions=563368716257344",
+            )
+        )
+        self.add_item(
+            Button(label="Join Support Server", style=ButtonStyle.link, url="https://discord.gg/tdGKExnZjj")
         )

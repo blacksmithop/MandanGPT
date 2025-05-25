@@ -22,9 +22,9 @@ services:
     environment:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
-    ports:
-      - "9001:9001"
-      - "9000:9000"
+    # ports:
+    #   - "9001:9001"
+    #   - "9000:9000"
     volumes:
       - minio_data:/minio_data
     command: minio server /minio_data --console-address ":9001"
@@ -55,7 +55,7 @@ services:
       retries: 3
     ports:
       - "19530:19530"
-      - "9091:9091"
+      # - "9091:9091"
     depends_on:
       - "etcd"
       - "minio"

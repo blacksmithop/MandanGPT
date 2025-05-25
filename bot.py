@@ -6,6 +6,7 @@ import random
 # import aiosqlite
 import discord
 from discord.ext import commands, tasks
+from discord import app_commands
 from discord.ext.commands import Context
 from discord.errors import LoginFailure
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from utils import discord_bot_token
-from database import DatabaseManager
+# from database import DatabaseManager
 from utils import bot_config as config, HelpCommand, get_new_activity
 
 
@@ -128,13 +129,14 @@ class DiscordBot(commands.Bot):
         help_command_handler.walk_cogs_and_generate_help_text(cogs=self.cogs)
         self.help_command_handler = help_command_handler
 
-    @tasks.loop(minutes=5.0)
+    @tasks.loop(minutes=30.0)
     async def status_task(self) -> None:
         """
         Update the bot activity.
         """
+        self.logger.info("Setting new activity for bot")
         activity = await get_new_activity()
-        await self.change_presence(status=discord.Status.online, activity=activity)
+        await self.change_presence(status=discord.Status.idle, activity=activity)
 
     @status_task.before_loop
     async def before_status_task(self) -> None:
@@ -244,6 +246,14 @@ class DiscordBot(commands.Bot):
                 color=0xE02B2B,
             )
             await context.send(embed=embed)
+        else:
+            raise error
+        
+    async def on_tree_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, app_commands.CommandOnCooldown):
+            return await interaction.response.send_message(f"Command is currently on cooldown! Try again in **{error.retry_after:.2f}** seconds!")
+        elif isinstance(error, app_commands.MissingPermissions):
+            return await interaction.response.send_message(f"You're missing permissions to use that")
         else:
             raise error
 
