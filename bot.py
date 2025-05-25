@@ -133,8 +133,9 @@ class DiscordBot(commands.Bot):
         """
         Update the bot activity.
         """
+        self.logger.info("Setting new activity for bot")
         activity = await get_new_activity()
-        await self.change_presence(status=discord.Status.online, activity=activity)
+        await self.change_presence(status=discord.Status.idle, activity=activity)
 
     @status_task.before_loop
     async def before_status_task(self) -> None:
