@@ -37,6 +37,7 @@ duckduckgo-search = "^8.0.2"
 langchain-community = "^0.3.24"
 langgraph = "^0.4.5"
 langfuse = "^2.60.5"
+langchain-unstructured = "^0.1.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
