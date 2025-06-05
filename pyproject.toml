@@ -7,7 +7,7 @@ readme = "Readme.md"
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.10,<4.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.8.0"
@@ -37,6 +37,11 @@ duckduckgo-search = "^8.0.2"
 langchain-community = "^0.3.24"
 langgraph = "^0.4.5"
 langfuse = "^2.60.5"
+
+
+[tool.poetry.group.mcp.dependencies]
+mcp = {extras = ["cli"], version = "^1.9.2"}
+notion-client = "^2.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
